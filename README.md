@@ -2,6 +2,17 @@
 
 v.0.0.1
 
+Install with
+
+```
+pip install -e .
+```
+
+Uninstall with
+```
+pip uninstall stacasso
+```
+
 Stacasso is a Python library for visualizing quantum computing circuits.
 
 The main repository resides on [GitHub](https://github.com/JonHub/stacasso).  The documentation (contained in the repository) can also be viewed online
