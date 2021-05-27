@@ -1,32 +1,94 @@
-from IPython.display import display, Markdown
+from IPython.display import display, Markdown, HTML
 import numpy as np
 import matplotlib.pyplot as plt
 import cirq
 import cmath
 
-# main to string function,
-# copied here to change make "horizontal_spacing" a paramater, not 3
-# (needs to be 6 when doing diagrams)
-#    horizontal_spacing=1 if transpose else 3
 
-# def to_text_diagram(
-#     self,
-#     *,
-#     use_unicode_characters: bool = True,
-#     transpose: bool = False,
-#     include_tags: bool = True,
-#     precision: Optional[int] = 3,
-#     qubit_order: 'cirq.QubitOrderOrList' = ops.QubitOrder.DEFAULT,
-# ) -> str:
+# list of websafe colors, for the qubits
+# these are used both for coloring the qubits in the circuit digram,
+# as well as drawing the corresponding bounding boxes in the illustration
+# https://www.w3schools.com/colors/colors_names.asp
+# Pyplot uses the some color names ...
+#  this list is losesly based on the tab10 default python color scheme
+qubit_cmap = ['Blue', 'DarkOrange', 'Green', 'DarkRed', 'Purple', 'Brown']
+
+
+def pprint(circuit, title='', indent=4, horizontal_spacing=6):
+    diagram = highlight(circuit, title=title, indent=4, horizontal_spacing=6)
+    display(HTML(diagram))
+
+
+def highlight(circuit, title='', indent=4, horizontal_spacing=6):
+    """ takes in a circuit (created by cirq), and 
+        returns a snytax-highlighted string version """
+
+    # start by converting to string;
+    # use the cirq function, except with more spacing
+    diagram = to_text_diagram(circuit, horizontal_spacing=horizontal_spacing)
+
+    # color the qubit names
+    diagram_colored_qubits = ''
+
+    color_index = 0
+    for line in diagram.split('\n'):
+        # add indent to the start of the lines
+        line = indent*' ' + line
+
+        # if this is the qubit name, colorize it
+        if line.find(':') > 0:
+            c_start = line[:line.find(':')+1]  # first part (qubit name)
+            c_end = line[line.find(':')+1:]  # second part (includes the colon)
+
+            line = c_start
+
+            # line contains code
+
+            color = qubit_cmap[color_index]
+            # print(color)
+            cc = '<span style="color:' + color + '">' + c_start + '</span>' + c_end
+            diagram_colored_qubits += cc
+            color_index += 1
+        else:
+            # line contains no code, just add it back
+            diagram_colored_qubits += line
+
+        diagram_colored_qubits += '<br>'
+
+    diagram = diagram_colored_qubits
+
+    # use web colors
+
+    # color @ symbol
+    diagram = diagram.replace('─@─', '─<span style="color:Green">@</span>─')
+    # color M symbol
+    diagram = diagram.replace('─M─', '─<span style="color:Maroon;fontweight:bold">M</span>─')
+    # <span style="color:green;font-weight:bold">@</span>
+
+    # add the title, last
+    diagram = '<span style="color:Maroon">' + title + '</span>' '<br><br>' + diagram
+
+    # finally, wrap in <pre></pre> tags, for the evenly spaced font
+    # (and to render the whitespace) ... <pre> is the html way to render code
+    # also, wrap with the 'white-space:pre' style, which prevents line wrapping
+
+    diagram = '<pre><span style="white-space:pre;">' + diagram + '</style></pre>'
+
+    return diagram
+
+
 def to_text_diagram(
-    cir: cirq.Circuit,
-    use_unicode_characters: bool = True,
-    transpose: bool = False,
-    include_tags: bool = True,
-    precision = 3,
-    qubit_order: 'cirq.QubitOrderOrList' = cirq.ops.QubitOrder.DEFAULT,
-) -> str:
-    """Returns text containing a diagram describing the circuit.
+        cir: cirq.Circuit,
+        use_unicode_characters: bool = True,
+        transpose: bool = False,
+        include_tags: bool = True,
+        precision=3,
+        qubit_order: 'cirq.QubitOrderOrList' = cirq.ops.QubitOrder.DEFAULT,
+        horizontal_spacing=3,) -> str:
+    """ function modified from Google Cirq (added horizontal_spacing)
+        original at x
+
+    Returns text containing a diagram describing the circuit.
 
     Args:
         use_unicode_characters: Determines if unicode characters are
@@ -51,16 +113,14 @@ def to_text_diagram(
 
     # JD this is where the spacing is set?
 
-    horizontal_spacing = 1 if transpose else 5
+    #horizontal_spacing = 1 if transpose else 3
+    horizontal_spacing = horizontal_spacing
 
     return diagram.render(
         crossing_char=(None if use_unicode_characters else ('-' if transpose else '|')),
         horizontal_spacing=horizontal_spacing,
         use_unicode_characters=use_unicode_characters,
     )
-
-
-
 
 
 def normalize_state(state):
@@ -73,7 +133,7 @@ def normalize_state(state):
 
 def draw_state(state, loc=[0, 0], box=True):
 
-    cmap = plt.get_cmap('tab10')
+    #cmap = plt.get_cmap('tab10')
     n = state.size  # number of states (size of state space)
     lw = .5  # linewidth, between states
 
@@ -84,7 +144,8 @@ def draw_state(state, loc=[0, 0], box=True):
 
         # draw dividing line between two states of q0
         # hline is y, xmin, xmax
-        plt.hlines(loc[1]-1, loc[0]-.8, loc[0]+.8, cmap(0), lw=lw*.5)
+        #plt.hlines(loc[1]-1, loc[0]-.8, loc[0]+.8, cmap(0), lw=lw*.5)
+        plt.hlines(loc[1]-1, loc[0]-.8, loc[0]+.8, qubit_cmap[0], lw=lw*.5)
 
         # draw the probabilities (amplitudes)
         draw_amplitude(state[0], [loc[0], loc[1]])
@@ -102,7 +163,7 @@ def draw_state(state, loc=[0, 0], box=True):
         draw_state(state[2:], [loc[0]+2, loc[1]], box=False)
 
         # vlines is x, ymin, ymax
-        plt.vlines(loc[0]+1, loc[1]-2.8, loc[1]+.8, cmap(1), lw=lw*.6)
+        plt.vlines(loc[0]+1, loc[1]-2.8, loc[1]+.8, qubit_cmap[1], lw=lw*.6)
 
         corners = []
         corners.append([loc[0]-1, loc[1]+1])  # upper left
@@ -114,7 +175,7 @@ def draw_state(state, loc=[0, 0], box=True):
         draw_state(state[:4], loc, box=False)
         draw_state(state[4:], [loc[0], loc[1]-4], box=False)
 
-        plt.hlines(loc[1]-3, loc[0]-.8, loc[0]+2.8, cmap(2), lw=lw*.7)
+        plt.hlines(loc[1]-3, loc[0]-.8, loc[0]+2.8, qubit_cmap[2], lw=lw*.7)
 
         corners = []
         corners.append([loc[0]-1, loc[1]+1])  # upper left
@@ -126,7 +187,7 @@ def draw_state(state, loc=[0, 0], box=True):
         draw_state(state[:8], loc, box=False)
         draw_state(state[8:], [loc[0]+4, loc[1]], box=False)
 
-        plt.vlines(loc[0]+3, loc[1]-6.8, loc[1]+.8, cmap(3), lw=lw*.8)
+        plt.vlines(loc[0]+3, loc[1]-6.8, loc[1]+.8, qubit_cmap[3], lw=lw*.8)
 
         corners = []
         corners.append([loc[0]-1, loc[1]+1])  # upper left
@@ -270,8 +331,8 @@ def draw_statevector4(state=None,
         cmap = plt.get_cmap('tab10')
 
         # (draw blue first, upper left)
-        border_color_a = cmap(1)
-        border_color_b = cmap(0)
+        border_color_a = qubit_cmap[1]  # cmap(1)
+        border_color_b = qubit_cmap[0]  # cmap(0)
     else:
         border_color_a = border_color
         border_color_b = border_color
@@ -310,7 +371,8 @@ def draw_statevector8(state=None,
 
     if border_color is None:
         border_color_a = None
-        border_color_b = cmap(2)
+        #border_color_b = cmap(2)
+        border_color_b = qubit_cmap[2]
     else:
         border_color_a = border_color
         border_color_b = border_color
@@ -339,7 +401,7 @@ def draw_statevector16(state=None,
     draw_statevector8(state[8:],
                       location=[location[0], location[1]-2*np.sqrt(32)],
                       scale=.9,
-                      border_color=cmap(3))
+                      border_color=qubit_cmap[3])
 
 
 def draw_statevector(state,
@@ -363,8 +425,8 @@ def draw_statevector(state,
     if d == 4:
         if border_color is None:
             # color not passed in, use the default
-            border_color_a = cmap(0)
-            border_color_b = cmap(1)
+            border_color_a = qubit_cmap[0]
+            border_color_b = qubit_cmap[1]
         else:
             border_color_a = border_color
             border_color_b = border_color
@@ -394,7 +456,7 @@ def draw_statevector(state,
         if border_color is None:
             # color not passed in, use the default
             border_color_a = None  # default
-            border_color_b = cmap(3)  # iterate one color
+            border_color_b = qubit_cmap[4]  # iterate one color
         else:
             border_color_a = border_color
             border_color_b = border_color
@@ -447,8 +509,8 @@ def make_bell_circuit(alpha=0, beta=0):
 
     bell_circuit = cirq.Circuit()
 
-    q0 = cirq.NamedQubit('photon A')
-    q1 = cirq.NamedQubit('photon B')
+    q0 = cirq.NamedQubit('q0')
+    q1 = cirq.NamedQubit('q1')
 
     bell_circuit.append(cirq.H(q0))
     bell_circuit.append(cirq.CNOT(q0, q1))
@@ -462,7 +524,7 @@ def make_bell_circuit(alpha=0, beta=0):
     #bell_circuit.append([cirq.rx(alpha).on(q0), cirq.rx(beta).on(q1)])
 
     # append the measurement
-    #bell_circuit.append(cirq.measure(q0, q1))
+    bell_circuit.append(cirq.measure(q0, q1))
 
     return bell_circuit
 

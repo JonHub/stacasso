@@ -1,116 +1,129 @@
-**Stacasso Readme**
+### Stacasso README
 
-v.0.0.1
+Stacasso is a Python library for visualizing quantum circuits.  Includes syntax highlighting to pretty-print circuit diagrams, as well as tools to illustrate and visualize quantum computation algorithms.
 
-Install with
+The project is free and open source (on [GitHub](https://github.com/JonHub/stacasso)).  Documentation can also be viewed online:
+
+* **[Stacasso README](https://jonhub.github.io/stacasso/)** (this file)
+* [Stacasso Tutorial (Notebook)](https://jonhub.github.io/stacasso/code/stacasso_introduction.html) (Introduction and Users's Guide, with Examples)
+
+> NOTE, Stacasso is currently *alpha* code!  This is an initial, pre-release, to demonstrate features and get feedback. Attempts will be made do document missing features / upcoming features, but be aware that code and interface may change.
+
+Stacasso integrates with [Cirq](https://github.com/quantumlib/Cirq), the quantum computing framework, which is used to create and simulate the circuits.  Stacasso adds the ability  Users can work within Cirq, and use Stacasso to:
+
+* **Pretty-Print  Circuits**.  Adds color (syntax highlighting) to circuits.  Outputs can be displayed to the screen, or returned as `.html` strings, for display elsewhere.
+* **Visualize Simulations**.  Illustrates a circuit's state and evolution, as by drawing probabilities (amplitudes) in a state space.
+
+Visualizing the state of the quantum computer, as it steps though a simulation, can give valuable insight as to how the calculation occurs.  The visualization is useful as a  a tool to learn/teach quantum computing, and also give insight into the computation, similar to a debugger when working with classical computing code.
+
+
+#### Installing
+
+Stacasso is a python package, and can be installed using pip.
+
+Download (or clone) a local copy from [GitHub](https://github.com/JonHub/stacasso).  Change to that directory, and install with
 
 ```
 pip install -e .
 ```
 
-Uninstall with
+Uninstall with:
+
 ```
 pip uninstall stacasso
 ```
 
-Stacasso is a Python library for visualizing quantum computing circuits.
-
-The main repository resides on [GitHub](https://github.com/JonHub/stacasso).  The documentation (contained in the repository) can also be viewed online
-
-* **[Stacasso README](https://jonhub.github.io/stacasso/)** (this file)
-* [Introducing Stacasso (Notebook)](https://jonhub.github.io/stacasso/code/stacasso_introduction.html) (Introduction and Users's Guide, with Examples)
+You should now be able to execute the `stacasso_introduction` notebook.  Note that the notebook will install google Cirq (using pip), if you do not already have it installed.
 
 
+#### Examples
 
-> NOTE, Stacasso is currently *alpha* code!  This is an initial, pre-release, to demonstrate features and get feedback.
+We can make and illustrate a simple 1 qubit quantum circuit with:
 
+```python
+import cirq
+import Stacasso as so
 
+rng_circuit = so.make_rng_circuit()
 
-The library builds upon and integrates with [Cirq](https://github.com/quantumlib/Cirq), the quantum computing framework.  Users can work within Cirq, and use Stacasso to:
+so.pprint(rng_circuit)
+so.illustrate(rng_circuit)
 
-* **Pretty-Print  Circuits**.  Adds color (syntax highlighting) and the ability to adjust spacing between gates <TODO> with displaying circuits.
-* **Visualize Simulations**.  Plots the circuit's state space (Hilbert space) as a grid, and draws probabilities as disks to represent a given state.
+```
 
-Visualizing the state of the quantum computer, as it steps though a simulation, can give valuable insight as to how the calculation occurs.  The visualization is useful as a  a tool to learn/teach quantum computing, and also give insight into the computation, similar to a debugger when working with classical computing code.
+<rng circuit>
 
-For examples, the Stacasso library includes several useful quantum computing codes.  The codes are drawn from the google cirq tutorial, and demonstrate key features common in quantum computing codes.  (Note, these codes are opensourced by Google under the Apache 2.0 license.  They are included here under terms of that license.)
+State space is drawn as a grid below the circuit (like a game board).  Probabilities are visualized as colored disks, with the area proportional to the probability of being in that state, if measured.  The phase of the underlying amplitude in encoded in the disk color, as well as the orientation of the "dial" (radius) of the disk.
 
-*  `bell_circuit()` creates an entangled pair of photons (qubits), is a fundamental starting point in quantum computation. (2 qubits)
-* `tele()` implements the teleportation circuit, two parties, Alice and Bob, use an entangled qubit pair to send a Message. (3 qubits)
-* `hlf()` is the "hidden linear function," the original "shallow code" designed to run on near-term quantum computing machines.  (3 or more qubits)
+The above circuit can be extended, by entangling the first qubit with a second.  This creates the classic Bell State, and the circuit demonstrates many fundamental quantum computing concepts.  (Initial state, superposition, entanglement, and collapse.)
 
-An example of a 3-qubit verison of the HLF2D problem is below.  The simulation starts off in initial state $\psi_0$, and contains two potential answers in the state just before the measurement, in $\psi_{ans}$.  The final measurement (collapse) only reveals one of the states.
+```python
+import cirq
+import Stacasso as so
 
-![stacasso_example_HLF2D](stacasso_example_HLF2D.svg)
+rng_circuit = so.make_bell_circuit()
 
-The classical *probability* of being in a given state is represented by the *area* of the disk at that location, and the *amplitude* and *phase* are represented by the radius of the disk.  Phase is also encoded by the color of the disk.
+so.pprint(bell_circuit)
+so.illustrate(bell_circuit, labels = ['$', '$psi_bell$',]  )
 
-Stacasso geometrically represents the full information of each state, at any time-step in the simulation.  The total areas of the probability disks adds to one, and all entries in state space are displayed, using tiling scheme to expand the gameboard, as more qubits are added.
+```
 
-The simulation space of a circuit with $n$ qubits is a cube, with $n$ dimensions.  For two and three qubits, this is easily represented as a square, or cube.  Stacasso draws these shapes, rotated and tiled, so all sides of the cube can be seen at the same time.
+<bell circuit>
+
+Note that for circuits with two or more qubit circuits, `Stacasso` draws the state space matrix rotated by 45 degrees, for visual clarity.
+
+#### More Qubits
+
+Visualizations can be extended to three (and higher) qubits, which can be thought of as cubes in three (and higher) dimensions.  `Stacasso` attempts to draw higher dimensional cubes (hypercubes) by duplicating and tiling the game board (state space representation) for each additional qubit added.
 
 Quite a few interesting quantum circuits can be built with two or three qubits, and many building blocks in quantum computing can be broken down into these smaller circuit snippets.  The tiling scheme can also be extended for four, five, or more qubits.
 
 Since drawing all sides of a cube was the artistic goal of the "cubist" painters, the name Stacasso is a tribute to the most famous cubist, State-space Picasso.
 
+Stacasso currently supports visualizations of up to four qubit circuits, with plans to support higher numbers in the future.  Below is an illustration of various size state spaces, for one to four qubits. 
 
+```python
+so.show_state_spaces()
+```
 
-## Installing
+<state spaces>
 
-Stacasso is currently stand-alone Python code.  To use, simply make sure the files in the `code` directory of the repository are in your directory.  You should be able to execute the `stacasso_introduction` notebook.
+In quantum computing, each pure state correspond to a unique value of the qbits.  For a three qubit computer, the state `111` is often simply called $7$, for simplicity.  Quantum circuits generally start with all qubits in state `0`, by convention.  This state, the initial state, is always drawn at the top of the game board.
 
-Note that the notebook will install google Cirq (using pip), if you do not already have it installed.
+Note that the results returned by `cirq`'s `simulate` function are not ordered in standard order (see x) by default.  `Stacasso` includes the `.order_cirq_state()` function to permute the states [TODO - what are the elements of the state called?  Pure states?  Elements?] in the correct counting order (`0`, `1`, `2`, ...). 
 
+#### The Stacasso Tutorial
 
-## Examples
+For additional examples, as well as additional information of using Stacasso, see x notebook.
 
-For details on using Stacasso for visualizing quantum computation, see the ["Stacasso Introduction" notebook](https://jonhub.github.io/stacasso/code/stacasso_introduction.html) .  The notebook (code) is available in this repository [/code/stacasso_introduction.ipynb](/code/stacasso_introduction.ipynb).  (Note that GitHub renders the notebook oddly.  As a workaound, the notebook was executed to `.html`, and made avaible through GitHub Pages.)
+Stacasso can be used to visualize more compex circuits, such as quantum teleportation (shown at the top of this README), or the HLF2D circuit.
 
-The notebook contains a number of examples, giving a visual representation of concepts in quantum computing.  The central ideas is that Stacasso represents state space (Hilbert Space) like a gameboard, and draws the states on the gameboard as "probabilty-amplitude disks" (PADs).
-    
-Displaying the states this way allows *all* of the state's information to be represented on the screen at one time.  Quantum circuits step the states from the initial state to the final state, in a number of discrete steps.  By drawing the states at each step, or at the crucial steps, it is possible to "see" how the computation unfolds.
-
-* **Visualizing Amplitudes and Probabilites** - quantum information is contained as vectors (like numpy arrays) of complex *amplitudes*, rather than the real-valued *probabilities* in classical theory.  Stacasso represents these values as "probability/amplitude disks" (PADs).  The size of the disk is proportional to the classical probability (change of being in that state, if measured), with the radius of the disk proportional to the magnitude of the amplitude.  Phase is encoded in the orientation of the "dial," as well as the color of the disk.
-
-* The **Bell State** is one of the simplest, and most important quantum circuts.  Since the circuit uses only two qubits, the representation in Stacasso is easy to follow.
-
-* **Quantum Teleportation** is a fundamental three-qubit circuit.  It demonstrates secure communication ("teleportation of information"), using entangled qubits.
-
-* **HLF 2D** is the (two-dimensional) "Hidden Linear Function" problem, a significant quantum computing problem (and solution) discovered in 2018.  The circuit is an example of a "shallow code," designed to finish computing in a short amout of time (small number of operations, many of which can be accomplished in parallel).  Shallow codes can be run on today's quantum computing hardware.
-
-## Project Goals
-
-Create usable, useful software for visualizing quantum computation.  This includes:
-
-Work on the pretty-print, including adding the spacing, and converting into svg (or html) ... may need to create syntax highlighting package (???), insure that the qubits are colored correctly, and work with cirq's text generation (to add the additional spaces?)
-
-Work on the visualizations - specifically, labeling the states (graphically), and ordering them correctly (from returned values from the simulation).
-
-Git (lol) the code into Google "contrib" ... need to start there, to make sure directory structure and such are okay.  Goal should be work towards integration, but not start util the code is mostly correct.  How to [Contribute to Google Cirq](https://github.com/quantumlib/Cirq/blob/master/CONTRIBUTING.md) ... 
-
-## TODO
-
-This code is currently early-stage alpha code, under active development.  Below is a partial list of task/features to add.  
-    
-* Circuits need to print into HTML, with the font included so they can be added reliably to the plots (the svg.)  The HTML can also be rendered directly, but this should be the intermediate format ...
-
-  Generate the HTML, using the Google Cirq code?  Download and understand the Google Cirq code, including the directory structure ...
-
-  The generated HTML can ALSO return plot locations (places to draw the state-space vectors).  Getting the HTML text working could take two or three days ... but then, most of the project.
-  
-  Need to be able to add in additional spaces, as well.
-
-* Figure out circuit ordering (and labels) ... this is crucial!  Also, add labels for states (much simpler).
-
----
-
-
-
-## Errata
+The goal is to extend `Stacasso` into a generally useful tool for understanding quantum computing.  The tutorial illustrates some of the basic fundamental quantum circuits, using Stacasso to as a guide.
 
 Different quantum computing algorithms create distinct patterns when visualized, and many quantum computation features (such as collapse or cancellation of probabilities) are immediately recogognizable.
 
-The state space (also called Hilbert space) can be thought of as game board, like the board on which you would play chess or checkers.  Rather than move around game pieces, quantum computers shuffle around *amplitudes*, values that represent the probabilities (and phase) of being in that state.
+Note that many of the circuits come from Googles Tutorial, an excellent opensource guide to cirq and quantum computing.  IBM Tutorial is also worthwhile.
 
-Stacasso draws this rotated into a diamond, to create a symmetry between the two qubits, and to make state statespace representation visually distinctive.
+#### License
+
+Stacasso is licened under the Apache 2.0 License.
+
+The code uses parts of the [Google Cirq]() project (also under Apache 2.0 License), used here under terms of that license.
+
+
+#### Contributing
+
+The repository is new and contains alpha code, and currently not accepting contributions at this time.  Please check back, as we would like to be able to accept contributions at some point in the future.
+
+#### Future Work
+
+(Internally, the code could to be cleaned up and refactored.)
+
+The goal is to get `Stacasso` usable, and then get it integrated into Google's cirq `contributing` folder, see [Contribute to Google Cirq](https://github.com/quantumlib/Cirq/blob/master/CONTRIBUTING.md) ... 
+
+Larger qubits would be interesting to visualize.  In this case, the gameobard would have to be stepped (or animated).  For instance, ten qubits needs 1024 states, but could be used to show error correction, such as the Shore code (9-qubits).
+
+Larger HLF2D problems would be interesting, as well as the shallow code that ran on Google's Sycamore (need to dig out that reference).
+
+
 
