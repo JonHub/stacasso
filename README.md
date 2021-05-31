@@ -1,52 +1,11 @@
 ### Stacasso README
 
-(with paragraph breaks)
-
-```python
-# EXAMPLE - Quantum Random Number Generater
-
-import cirq
-import stacasso as so
-
-# start with a circuit, created with cirq
-
-
-# label the states (optional)
-labels = ['$\psi_0$', '', '$\psi_M$']
-
-# print and illustrate with Stacasso
-so.pprint( qrng_circuit, '"Quantum Random Number Generator (QRNG)"' )
-so.illustrate( qrng_circuit, labels )
-
-```
-
-
-
-<pre><span style="white-space:pre;"><span style="color:Maroon">"Quantum Random Number Generator (QRNG)"</span><br><br>    <span style="background-color:WhiteSmoke;color:Blue">qubit 0</span>: ──────H──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<br></span></pre>
-
-<div>
-<img
-    title="quantum random number generator"
-    alignment="left"
-    src="notebooks/qrng_illustration.svg"
-    margin=0
-    padding=0
->
-</div>
-
-<div>
-<img
-    title="quantum random number generator"
-    alignment="left"
-    src="notebooks/qrng_illustration.svg"
->
-</div>
 
 ```python
 # Bell Example
 import stacasso as so
 
-# create the circuit 
+# create the circuit (using cirq)
 bell_circuit = so.make_bell_circuit()
 
 # label the states (optional)
@@ -60,33 +19,23 @@ so.illustrate(bell_circuit, labels)
 
 ```
 
-<br>
+Gives the following output (syntax highlighted circuit, and illustration):
 
-<pre><span style="white-space:pre;"><span style="color:Maroon">"Bell State"</span><br><br>    <span style="background-color:WhiteSmoke;color:Blue">q0</span>: ──────H──────<span style="color:MediumSlateBlue">@</span>──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<br>                     │      │<br>    <span style="background-color:WhiteSmoke;color:DarkOrange">q1</span>: ─────────────X──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<br></span></pre>
-
+<pre><span style="white-space:pre;font-size:medium">  <span style="color:Maroon">"Bell State"</span><br><br>    <span style="background-color:WhiteSmoke;color:Blue">q0</span>: ──────H──────<span style="color:MediumSlateBlue">@</span>──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<br>                     │      │<br>    <span style="background-color:WhiteSmoke;color:DarkOrange">q1</span>: ─────────────X──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<br></span></pre>
 
 <div>
 <img
     title="Bell Circuit"
     alignment="left"
     src="notebooks/bell_illustration.svg"
+    margin=0
+    padding=0
 >
 </div>
 
-<pre><span style="white-space:pre;"><span style="color:Maroon">"Quantum Teleportation"</span><br><br>    <span style="background-color:WhiteSmoke;color:Blue">A (msg)</span>: ────────────────────X^0.3──────<span style="color:MediumSlateBlue">@</span>──────H──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>─────────────<span style="color:MediumSlateBlue">@</span>──────<br>                                            │             │             │<br>    <span style="background-color:WhiteSmoke;color:DarkOrange">B (ali)</span>: ──────H──────<span style="color:MediumSlateBlue">@</span>─────────────────X─────────────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<span style="color:MediumSlateBlue">@</span>──────┼──────<br>                          │                                      │      │<br>    <span style="background-color:WhiteSmoke;color:ForestGreen">M (bob)</span>: ─────────────X──────────────────────────────────────X──────<span style="color:MediumSlateBlue">@</span>──────<br></span></pre>
+A more complex problem is the HLF2D:
 
-<div>
-<img
-    title="quantum teleportation"
-    alignment="left"
-    src="notebooks/tele_illustration.svg"
->
-</div>
-
-
-<p>
-
-<pre><span style="white-space:pre;"><span style="color:Maroon">"HLF 2D"</span><br><br>    <span style="background-color:WhiteSmoke;color:Blue">0</span>: ──────H────────────────────H──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<br>    <br>    <span style="background-color:WhiteSmoke;color:DarkOrange">1</span>: ──────H────────────────────H──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<br>    <br>    <span style="background-color:WhiteSmoke;color:ForestGreen">2</span>: ──────H──────<span style="color:MediumSlateBlue">@</span>──────S──────H──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<br>                    │<br>    <span style="background-color:WhiteSmoke;color:DarkRed">3</span>: ──────H──────<span style="color:MediumSlateBlue">@</span>──────S──────H──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<br></span></pre>
+<pre><span style="white-space:pre;font-size:medium">  <span style="color:Maroon">"HLF 2D"</span><br><br>    <span style="background-color:WhiteSmoke;color:Blue">0</span>: ──────H────────────────────H──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<br>    <br>    <span style="background-color:WhiteSmoke;color:DarkOrange">1</span>: ──────H────────────────────H──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<br>    <br>    <span style="background-color:WhiteSmoke;color:ForestGreen">2</span>: ──────H──────<span style="color:MediumSlateBlue">@</span>──────S──────H──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<br>                    │<br>    <span style="background-color:WhiteSmoke;color:DarkRed">3</span>: ──────H──────<span style="color:MediumSlateBlue">@</span>──────S──────H──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<br></span></pre>
 
 <div>
 <img
@@ -95,7 +44,6 @@ so.illustrate(bell_circuit, labels)
     src="notebooks/hlf2d_illustration.svg"
 >
 </div>
-
 
 
 Stacasso is a Python library for visualizing quantum circuits.  Includes syntax highlighting to pretty-print circuit diagrams, as well as tools to illustrate and visualize quantum computation algorithms.
