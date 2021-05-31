@@ -1,5 +1,84 @@
 ### Stacasso README
 
+
+
+```python
+# EXAMPLE - Quantum Random Number Generater
+
+import cirq
+import stacasso as so
+
+# start with a circuit, created with cirq
+circuit_qrng = so.make_quantum_random_number_generator()
+
+# label the states (optional)
+labels = ['$\psi_0$', '', '$\psi_M$']
+
+# print and illustrate with Stacasso
+so.pprint( qrng_circuit, '"Quantum Random Number Generator (QRNG)"' )
+so.illustrate( qrng_circuit, labels )
+
+```
+
+
+
+<pre><span style="white-space:pre;"><span style="color:Maroon">"Quantum Random Number Generator (QRNG)"</span><br><br>    <span style="background-color:WhiteSmoke;color:Blue">qubit 0</span>: ──────H──────<span style="background-color:WhiteSmoke;color:Maroon;fontweight:bold">M</span>──────<br></style></pre>
+
+<img title="a title" align="left" alt="Alt text" src="notebooks/rng_illustration.svg">
+
+
+
+```python
+# Bell Example
+import stacasso as so
+
+# create the circuit 
+bell_circuit = so.make_bell_circuit()
+
+# label the states (optional)
+labels = ['$\psi_0$',
+          '',
+          '$\psi_{Bell}$',
+          '$\psi_M$']
+
+so.pprint(bell_circuit)
+so.illustrate(bell_circuit, labels)
+
+```
+
+
+<pre><span style="white-space:pre;"><span style="color:Maroon">"Bell State"</span><br><br>    <span style="background-color:WhiteSmoke;color:Blue">q0</span>: ──────H──────<span style="color:MediumSlateBlue">@</span>──────<span style="background-color:WhiteSmoke;color:Maroon;fontweight:bold">M</span>──────<br>                     │      │<br>    <span style="background-color:WhiteSmoke;color:DarkOrange">q1</span>: ─────────────X──────<span style="background-color:WhiteSmoke;color:Maroon;fontweight:bold">M</span>──────<br></style></pre>
+
+<img title="a title" align="left" alt="Alt text" src="notebooks/bell_illustration.svg">
+
+
+
+### Gallery
+
+
+
+
+<pre><span style="white-space:pre;"><span style="color:Maroon">"Quantum Teleportation"</span><br><br>    <span style="background-color:WhiteSmoke;color:Blue">A (msg)</span>: ────────────────────X^0.3──────<span style="color:MediumSlateBlue">@</span>──────H──────<span style="background-color:WhiteSmoke;color:Maroon;fontweight:bold">M</span>─────────────<span style="color:MediumSlateBlue">@</span>──────<br>                                            │             │             │<br>    <span style="background-color:WhiteSmoke;color:DarkOrange">B (ali)</span>: ──────H──────<span style="color:MediumSlateBlue">@</span>─────────────────X─────────────<span style="background-color:WhiteSmoke;color:Maroon;fontweight:bold">M</span>──────<span style="color:MediumSlateBlue">@</span>──────┼──────<br>                          │                                      │      │<br>    <span style="background-color:WhiteSmoke;color:ForestGreen">M (bob)</span>: ─────────────X──────────────────────────────────────X──────<span style="color:MediumSlateBlue">@</span>──────<br></style></pre>
+
+
+
+<img title="a title" align="left" alt="Alt text" src="notebooks/tele_illustration.svg">
+
+
+
+<pre><span style="white-space:pre;"><span style="color:Maroon">"HLF 2D"</span><br><br>    <span style="background-color:WhiteSmoke;color:Blue">0</span>: ──────H────────────────────H──────<span style="background-color:WhiteSmoke;color:Maroon;fontweight:bold">M</span>──────<br>    <br>    <span style="background-color:WhiteSmoke;color:DarkOrange">1</span>: ──────H────────────────────H──────<span style="background-color:WhiteSmoke;color:Maroon;fontweight:bold">M</span>──────<br>    <br>    <span style="background-color:WhiteSmoke;color:ForestGreen">2</span>: ──────H──────<span style="color:MediumSlateBlue">@</span>──────S──────H──────<span style="background-color:WhiteSmoke;color:Maroon;fontweight:bold">M</span>──────<br>                    │<br>    <span style="background-color:WhiteSmoke;color:DarkRed">3</span>: ──────H──────<span style="color:MediumSlateBlue">@</span>──────S──────H──────<span style="background-color:WhiteSmoke;color:Maroon;fontweight:bold">M</span>──────<br></style></pre>
+
+<img title="a title" align="left" alt="Alt text" src="notebooks/hlf_illustration.svg">
+
+
+
+
+
+
+
+
+
+
 Stacasso is a Python library for visualizing quantum circuits.  Includes syntax highlighting to pretty-print circuit diagrams, as well as tools to illustrate and visualize quantum computation algorithms.
 
 The project is free and open source (on [GitHub](https://github.com/JonHub/stacasso)).  Documentation can also be viewed online:

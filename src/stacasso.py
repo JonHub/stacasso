@@ -3,6 +3,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 import cirq
 import cmath
+from html.parser import HTMLParser
+import re
+
+# TODO: qubit names in 'highlight' should be padded (right aligned),
+#         also requires removing some of the circuit line ... but needs to be done!
+#       add labels to the other states
+#       add 4 qubit state
+#       maybe move circuits?
 
 
 # list of websafe colors, for the qubits
@@ -11,17 +19,132 @@ import cmath
 # https://www.w3schools.com/colors/colors_names.asp
 # Pyplot uses the some color names ...
 #  this list is losesly based on the tab10 default python color scheme
-qubit_cmap = ['Blue', 'DarkOrange', 'Green', 'DarkRed', 'Purple', 'Brown']
+#  ... colors up to six qubits so far ...
+qubit_cmap = ['Blue', 'DarkOrange', 'ForestGreen', 'DarkRed', 'Purple', 'Brown']
 
 
-def pprint(circuit, title='', indent=4, horizontal_spacing=6):
+def test_regex():
+    """ useful to extact a number in a string """
+
+    import re
+
+    K = '*'
+    # https://docs.python.org/3/howto/regex.html
+    regex_any_number = '-?(\d*\.)?\d+'
+
+    test_str = 'numbers 1 to 90 plus 5 minus -2 and 3.14 or -9.9'
+
+    print('original: ' + str(test_str))
+
+    # replace x with y in str
+    res = re.sub(regex_any_number, K, test_str)
+
+    print('replaced: ' + str(res))
+
+
+class HTMLFilter(HTMLParser):
+    """ class to strip html to regular text, from
+        https://stackoverflow.com/questions/14694482/converting-html-to-text-with-python
+
+    """
+
+    text = ""
+
+    def handle_data(self, data):
+        self.text += data
+
+
+def html_to_text(html_string):
+    f = HTMLFilter()
+    f.feed(html_string)
+    text_string = f.text
+    return text_string
+
+
+def illustrate(circuit, labels=None, offset_ends=False):
+
+    # simulate the circuit
+    states = make_state_list(circuit)
+
+    #plt.figure(figsize=[3.7, 10])
+    # find out how big the circuit is,
+    # and create figure with that size
+
+    # the first line of the circuit starts on line 2 ...
+    # hardcode is somewhat sloppy, maybe change later
+    one_line_html = highlight(circuit).split('<br>')[0]
+    one_line_text = html_to_text(one_line_html)
+
+    circuit_length_chars = len(one_line_text)
+    # print(circuit_length_chars)
+
+    # find the start of the circuit
+    # (starts after the qubit name)
+    circuit_start_chars = len(one_line_text.split(': ─')[0]) + 2
+    # really, this shouldcome frome the max of checking all lines,
+    # or from the length of the moments themselves,
+    # from when the dragram is first built (better option, but more code)
+
+    chars_to_length = .12
+
+    offset = (circuit_start_chars + 3)  # first plot (in plot units)
+    spacing = 7  # game boards moments (in plot units)
+
+    for s in range(len(states)):
+        # find the label for this state, if labels were passed in
+        if labels is not None:
+            label = labels[s]
+        else:
+            label = None
+
+        # scoot the ends slightly, for readability (optional)
+        scoot = 0
+        if offset_ends and s == 0:
+            scoot = -spacing/2
+        if offset_ends and s == len(states)-1:
+            scoot = spacing/3
+
+        # print(offset+s*spacing)
+        xloc = offset+s*spacing+scoot
+        draw_statevector(states[s], [xloc, 0], label=label)
+
+    # set the end of the graph to be just just after the last gameboard
+    # adding "spacing" gives enough room, even if "offset_ends" is True
+    x_end = offset+s*spacing + spacing
+    # plt.tight_layout()
+    plt.gca().set_xlim([0, x_end])
+    #plt.gca().set_ylim([None, 2*np.sqrt(2)+.1])
+
+    # print(plt.gca().get_xlim())
+    # print(plt.gca().get_ylim())
+
+    # set the (physical) figure size
+    # the x width comse from the circuit,
+    # but the y height is calculated from the aspect ratio
+    #plt.tight_layout()
+
+    figsize_x = circuit_length_chars * chars_to_length
+    y_scale = (plt.gca().get_ylim()[1]-plt.gca().get_ylim()[0]) / x_end
+    figsize_y = figsize_x * y_scale
+
+    #if labels is not None:
+    #    figsize_y += .5  # add some, for the labels
+    # print(figsize_x)
+    # print(figsize_y)
+
+    plt.gcf().set_size_inches([figsize_x, figsize_y], forward=True)
+
+    # tight does not work here
+
+
+def pprint(circuit, title=None, indent=4, horizontal_spacing=6):
     diagram = highlight(circuit, title=title, indent=4, horizontal_spacing=6)
     display(HTML(diagram))
 
 
-def highlight(circuit, title='', indent=4, horizontal_spacing=6):
+def highlight(circuit, title=None, indent=4, horizontal_spacing=6):
     """ takes in a circuit (created by cirq), and 
-        returns a snytax-highlighted string version """
+        returns a snytax-highlighted html string version """
 
     # start by converting to string;
     # use the cirq function, except with more spacing
@@ -33,12 +156,13 @@ def highlight(circuit, title='', indent=4, horizontal_spacing=6):
     color_index = 0
     for line in diagram.split('\n'):
         # add indent to the start of the lines
-        line = indent*' ' + line
+        #line = indent*' ' + line
 
         # if this is the qubit name, colorize it
         if line.find(':') > 0:
-            c_start = line[:line.find(':')+1]  # first part (qubit name)
-            c_end = line[line.find(':')+1:]  # second part (includes the colon)
+            colon_location = line.find(':')
+            c_start = line[:colon_location]  # first part (qubit name)
+            c_end = line[colon_location:]  # second part (includes the colon)
 
             line = c_start
 
@@ -46,12 +170,19 @@ def highlight(circuit, title='', indent=4, horizontal_spacing=6):
 
             color = qubit_cmap[color_index]
             # print(color)
-            cc = '<span style="color:' + color + '">' + c_start + '</span>' + c_end
-            diagram_colored_qubits += cc
+           # background-color:powderblue;
+
+            #cc = '<span style="color:' + color + '">' + c_start + '</span>' + c_end
+            cc = '<span style="background-color:WhiteSmoke;color:' + color + '">' + c_start + '</span>' + c_end
+
+            diagram_colored_qubits += indent*' ' + cc
             color_index += 1
+
+            # line = indent*' ' + line # indent
         else:
             # line contains no code, just add it back
-            diagram_colored_qubits += line
+            #line = indent*' ' + line
+            diagram_colored_qubits += indent*' ' + line
 
         diagram_colored_qubits += '<br>'
 
@@ -60,13 +191,15 @@ def highlight(circuit, title='', indent=4, horizontal_spacing=6):
     # use web colors
 
     # color @ symbol
-    diagram = diagram.replace('─@─', '─<span style="color:Green">@</span>─')
+    diagram = diagram.replace('─@─', '─<span style="color:MediumSlateBlue">@</span>─')
     # color M symbol
-    diagram = diagram.replace('─M─', '─<span style="color:Maroon;fontweight:bold">M</span>─')
+    diagram = diagram.replace(
+        '─M─', '─<span style="background-color:WhiteSmoke;color:Maroon;fontweight:bold">M</span>─')
     # <span style="color:green;font-weight:bold">@</span>
 
     # add the title, last
-    diagram = '<span style="color:Maroon">' + title + '</span>' '<br><br>' + diagram
+    if title is not None:
+        diagram = '<span style="color:Maroon">' + title + '</span>' '<br><br>' + diagram
 
     # finally, wrap in <pre></pre> tags, for the evenly spaced font
     # (and to render the whitespace) ... <pre> is the html way to render code
@@ -102,7 +235,7 @@ def to_text_diagram(
         The text diagram.
     """
     # JD make the diagram (like a a canvas)
-#    diagram = self.to_text_diagram_drawer(
+    # diagram = self.to_text_diagram_drawer(
     diagram = cir.to_text_diagram_drawer(
         use_unicode_characters=use_unicode_characters,
         include_tags=include_tags,
@@ -131,91 +264,91 @@ def normalize_state(state):
     return state / np.sqrt(np.sum(np.abs(state)**2))
 
 
-def draw_state(state, loc=[0, 0], box=True):
+# def draw_state(state, loc=[0, 0], box=True):
 
-    #cmap = plt.get_cmap('tab10')
-    n = state.size  # number of states (size of state space)
-    lw = .5  # linewidth, between states
+#     #cmap = plt.get_cmap('tab10')
+#     n = state.size  # number of states (size of state space)
+#     lw = .5  # linewidth, between states
 
-    if n == 2:
-        # one qubit, this is the base of the recusion
-        plt.gca().set_aspect(1)
-        plt.axis('off')
+#     if n == 2:
+#         # one qubit, this is the base of the recusion
+#         plt.gca().set_aspect(1)
+#         plt.axis('off')
 
-        # draw dividing line between two states of q0
-        # hline is y, xmin, xmax
-        #plt.hlines(loc[1]-1, loc[0]-.8, loc[0]+.8, cmap(0), lw=lw*.5)
-        plt.hlines(loc[1]-1, loc[0]-.8, loc[0]+.8, qubit_cmap[0], lw=lw*.5)
+#         # draw dividing line between two states of q0
+#         # hline is y, xmin, xmax
+#         #plt.hlines(loc[1]-1, loc[0]-.8, loc[0]+.8, cmap(0), lw=lw*.5)
+#         plt.hlines(loc[1]-1, loc[0]-.8, loc[0]+.8, qubit_cmap[0], lw=lw*.5)
 
-        # draw the probabilities (amplitudes)
-        draw_amplitude(state[0], [loc[0], loc[1]])
-        draw_amplitude(state[1], [loc[0], loc[1]-2])
+#         # draw the probabilities (amplitudes)
+#         draw_amplitude(state[0], [loc[0], loc[1]])
+#         draw_amplitude(state[1], [loc[0], loc[1]-2])
 
-        corners = []
-        corners.append([loc[0]-1, loc[1]+1])  # upper left
-        corners.append([loc[0]+1, loc[1]+1])  # upper right
-        corners.append([loc[0]+1, loc[1]-3])  # lower right
-        corners.append([loc[0]-1, loc[1]-3])  # lower left
+#         corners = []
+#         corners.append([loc[0]-1, loc[1]+1])  # upper left
+#         corners.append([loc[0]+1, loc[1]+1])  # upper right
+#         corners.append([loc[0]+1, loc[1]-3])  # lower right
+#         corners.append([loc[0]-1, loc[1]-3])  # lower left
 
-    elif n == 4:
-        # draw one qubit motif, twice
-        draw_state(state[:2], loc, box=False)
-        draw_state(state[2:], [loc[0]+2, loc[1]], box=False)
+#     elif n == 4:
+#         # draw one qubit motif, twice
+#         draw_state(state[:2], loc, box=False)
+#         draw_state(state[2:], [loc[0]+2, loc[1]], box=False)
 
-        # vlines is x, ymin, ymax
-        plt.vlines(loc[0]+1, loc[1]-2.8, loc[1]+.8, qubit_cmap[1], lw=lw*.6)
+#         # vlines is x, ymin, ymax
+#         plt.vlines(loc[0]+1, loc[1]-2.8, loc[1]+.8, qubit_cmap[1], lw=lw*.6)
 
-        corners = []
-        corners.append([loc[0]-1, loc[1]+1])  # upper left
-        corners.append([loc[0]+3, loc[1]+1])  # upper right
-        corners.append([loc[0]+3, loc[1]-3])  # lower right
-        corners.append([loc[0]-1, loc[1]-3])  # lower left
+#         corners = []
+#         corners.append([loc[0]-1, loc[1]+1])  # upper left
+#         corners.append([loc[0]+3, loc[1]+1])  # upper right
+#         corners.append([loc[0]+3, loc[1]-3])  # lower right
+#         corners.append([loc[0]-1, loc[1]-3])  # lower left
 
-    elif n == 8:
-        draw_state(state[:4], loc, box=False)
-        draw_state(state[4:], [loc[0], loc[1]-4], box=False)
+#     elif n == 8:
+#         draw_state(state[:4], loc, box=False)
+#         draw_state(state[4:], [loc[0], loc[1]-4], box=False)
 
-        plt.hlines(loc[1]-3, loc[0]-.8, loc[0]+2.8, qubit_cmap[2], lw=lw*.7)
+#         plt.hlines(loc[1]-3, loc[0]-.8, loc[0]+2.8, qubit_cmap[2], lw=lw*.7)
 
-        corners = []
-        corners.append([loc[0]-1, loc[1]+1])  # upper left
-        corners.append([loc[0]+3, loc[1]+1])  # upper right
-        corners.append([loc[0]+3, loc[1]-7])  # lower right
-        corners.append([loc[0]-1, loc[1]-7])  # lower left
+#         corners = []
+#         corners.append([loc[0]-1, loc[1]+1])  # upper left
+#         corners.append([loc[0]+3, loc[1]+1])  # upper right
+#         corners.append([loc[0]+3, loc[1]-7])  # lower right
+#         corners.append([loc[0]-1, loc[1]-7])  # lower left
 
-    elif n == 16:
-        draw_state(state[:8], loc, box=False)
-        draw_state(state[8:], [loc[0]+4, loc[1]], box=False)
+#     elif n == 16:
+#         draw_state(state[:8], loc, box=False)
+#         draw_state(state[8:], [loc[0]+4, loc[1]], box=False)
 
-        plt.vlines(loc[0]+3, loc[1]-6.8, loc[1]+.8, qubit_cmap[3], lw=lw*.8)
+#         plt.vlines(loc[0]+3, loc[1]-6.8, loc[1]+.8, qubit_cmap[3], lw=lw*.8)
 
-        corners = []
-        corners.append([loc[0]-1, loc[1]+1])  # upper left
-        corners.append([loc[0]+7, loc[1]+1])  # upper right
-        corners.append([loc[0]+7, loc[1]-7])  # lower right
-        corners.append([loc[0]-1, loc[1]-7])  # lower left
+#         corners = []
+#         corners.append([loc[0]-1, loc[1]+1])  # upper left
+#         corners.append([loc[0]+7, loc[1]+1])  # upper right
+#         corners.append([loc[0]+7, loc[1]-7])  # lower right
+#         corners.append([loc[0]-1, loc[1]-7])  # lower left
 
-    elif n == 32:
-        draw_state(state[:16], loc, box=False)
-        draw_state(state[16:], [loc[0], loc[1]+8], box=False)
+#     elif n == 32:
+#         draw_state(state[:16], loc, box=False)
+#         draw_state(state[16:], [loc[0], loc[1]+8], box=False)
 
-        #plt.vlines(loc[0]+3, loc[1]-6.8, loc[1]+.8, cmap(3), lw=lw*.8)
+#         #plt.vlines(loc[0]+3, loc[1]-6.8, loc[1]+.8, cmap(3), lw=lw*.8)
 
-        corners = []
-        corners.append([loc[0]-1, loc[1]+1])  # upper left
-        corners.append([loc[0]+7, loc[1]+1])  # upper right
-        corners.append([loc[0]+7, loc[1]-7])  # lower right
-        corners.append([loc[0]-1, loc[1]-7])  # lower left
+#         corners = []
+#         corners.append([loc[0]-1, loc[1]+1])  # upper left
+#         corners.append([loc[0]+7, loc[1]+1])  # upper right
+#         corners.append([loc[0]+7, loc[1]-7])  # lower right
+#         corners.append([loc[0]-1, loc[1]-7])  # lower left
 
-    # draw lines between the four corners
-    # this take some time ...
-    if box:
-        for c in range(4):
-            # print(corners[c])
-            plt.plot([corners[c][0], corners[(c+1) % 4][0]],
-                     [corners[c][1], corners[(c+1) % 4][1]],
-                     color='black',
-                     linewidth=.2)
+#     # draw lines between the four corners
+#     # this take some time ...
+#     if box:
+#         for c in range(4):
+#             # print(corners[c])
+#             plt.plot([corners[c][0], corners[(c+1) % 4][0]],
+#                      [corners[c][1], corners[(c+1) % 4][1]],
+#                      color='black',
+#                      linewidth=.2)
 
 
 #
@@ -223,7 +356,6 @@ def draw_state(state, loc=[0, 0], box=True):
 #
 def draw_amplitude(amplitude,
                    location=[0, 0],
-                   box=None,
                    border_color='black',
                    tol=1e-6):
     """ Draws an amplitude between [0,1]
@@ -239,30 +371,6 @@ def draw_amplitude(amplitude,
 
     plt.gca().set_aspect(1)
     plt.axis('off')
-
-    # pyplot will draw a line between two points passed as a list-convenient!
-    if box is not None:
-        # draw the bounding box
-        corners = []
-        if box == 'd':
-            # corners of a diamond
-            corners.append([location[0]+np.sqrt(2), location[1]])  # right
-            corners.append([location[0], location[1]+np.sqrt(2)])  # top
-            corners.append([location[0]-np.sqrt(2), location[1]])  # left
-            corners.append([location[0], location[1]-np.sqrt(2)])  # bottom
-        elif box == 'r':
-            # corners of a box
-            corners.append([location[0]-1, location[1]+1])  # upper left
-            corners.append([location[0]+1, location[1]+1])  # upper right
-            corners.append([location[0]-1, location[1]-1])  # lower left
-            corners.append([location[0]-1, location[1]+1])  # lower right
-
-        # draw lines between the four corners
-        # this take some time ...
-        for c in range(4):
-            plt.plot([corners[c][0], corners[(c+1) % 4][0]],
-                     [corners[c][1], corners[(c+1) % 4][1]],
-                     color=border_color, linewidth=.2)
 
     # get amplitude and phase [-π,π], real numbers
     r = np.abs(amplitude)
@@ -283,26 +391,134 @@ def draw_amplitude(amplitude,
     x = r*np.cos(angles)
     y = r*np.sin(angles)
 
+    # draw this disk and dial with a high zorder,
+    # so probabilites will be drawn on top of the game board
+
     plt.fill_between(location[0]+x,
                      location[1]+y,
                      location[1]-y,
                      color=color,
                      alpha=.8,
                      linewidth=r,
-                     edgecolor='black')  # fill
+                     edgecolor='black',
+                     zorder=1e3)  # fill
 
     # draw the dial
     dial_end = (location[0]+r*np.cos(p), location[1]+r*np.sin(p))
-    plt.plot((location[0], dial_end[0]), (location[1], dial_end[1]), color='black', linewidth=r)
+    plt.plot((location[0], dial_end[0]),
+             (location[1], dial_end[1]),
+             color='black',
+             linewidth=r,
+             zorder=2e3)
 
     return None
+
+
+def draw_statevector(state=None,
+                     location=[0, 0],
+                     layout=None,
+                     border_color=None,
+                     scale=1.0,
+                     label=None):
+    """ there is likely a better way to deal with all the gameboard types,
+        but this works for now """
+    if len(state) == 2:
+        draw_statevector2(state=state,
+                          location=location,
+                          layout=layout,
+                          border_color=border_color,
+                          scale=scale,
+                          label=label)
+    elif len(state) == 4:
+        draw_statevector4(state=state,
+                          location=location,
+                          layout=layout,
+                          border_color=border_color,
+                          scale=scale,
+                          label=label)
+    elif len(state) == 8:
+        draw_statevector8(state=state,
+                          location=location,
+                          layout=layout,
+                          border_color=border_color,
+                          scale=scale)
+    elif len(state) == 16:
+        draw_statevector16(state=state,
+                           location=location,
+                           layout=layout,
+                           border_color=border_color,
+                           scale=scale)
+
+
+def draw_statevector2(state=None,
+                      location=[0, 0],
+                      layout=None,
+                      border_color=None,
+                      scale=1.0,
+                      label=None):
+    """ draws a 4 dimensional statevector, representing the probability (including phase)
+        of being found in a given space in Hilbert space (state space), for two qubits
+        With a scale of 1.0 (default), an amplitude with magnitude 1 in represented as a disk
+        with radius one (full size).
+    """
+    plt.gca().set_aspect(1)
+    plt.axis('off')
+
+    loc = location
+    s = scale
+
+    # "center to corner" length, for convenience
+    # (the full diamond is twice this value, in width and height)
+    # cc = 2*np.sqrt(2)
+
+    # find the corners of the outside of the box (rectangle)\
+    # (start upper left, go clockwise)
+    corners = []
+    corners.append(np.array([loc[0]-s*1, 0]))  #
+    corners.append(np.array([loc[0]+s*1, 0]))  #
+    corners.append(np.array([loc[0]+s*1, loc[1]-s*4]))  #
+    corners.append(np.array([loc[0]-s*1, loc[1]-s*4]))  #
+
+    if border_color is None:
+        border_color = qubit_cmap[0]  # cmap(1)
+
+    # draw the outline of the box
+    plt.plot([corners[0][0], corners[1][0]], [corners[0][1], corners[1][1]],
+             color=border_color, linewidth=s*.5)
+    plt.plot([corners[1][0], corners[2][0]], [corners[1][1], corners[2][1]],
+             color=border_color, linewidth=s*.5)
+    plt.plot([corners[2][0], corners[3][0]], [corners[2][1], corners[3][1]],
+             color=border_color, linewidth=s*.5)
+    plt.plot([corners[3][0], corners[0][0]], [corners[3][1], corners[0][1]],
+             color=border_color, linewidth=s*.5)
+
+    # draw the horizontal line (y, min, xmax)
+    plt.hlines(loc[1]-s*2, loc[0]-s*1, loc[0]+s*1,
+               color=border_color, linewidth=s*.2)
+
+    # draw the amplitudes
+    # TODO - check (check with scale)
+    draw_amplitude(s*state[0], [loc[0], loc[1]-s])
+    draw_amplitude(s*state[1], [loc[0], loc[1]-3*s])
+
+    if label is not None:
+        text_loc = (loc[0]-s*.75,loc[1]-6.5*s)
+        plt.text(text_loc[0],
+                 text_loc[1],
+                 label,
+                 horizontalalignment='left',
+                 verticalalignment='bottom')
+
+        # invisible marker, since python does include text when scaling
+        plt.plot(text_loc[0],text_loc[1],alpha=0)
 
 
 def draw_statevector4(state=None,
                       location=[0, 0],
                       layout=None,
                       border_color=None,
-                      scale=1.0):
+                      scale=1.0,
+                      label=None):
     """ draws a 4 dimensional statevector, representing the probability (including phase)
         of being found in a given space in Hilbert space (state space), for two qubits
         With a scale of 1.0 (default), an amplitude with magnitude 1 in represented as a disk
@@ -356,17 +572,32 @@ def draw_statevector4(state=None,
              color=border_color_a, linewidth=s*.2)
 
     # draw the amplitudes
-    draw_amplitude(s*state[0], [loc[0], loc[1]+s*cc/2], box=None)
-    draw_amplitude(s*state[1], [loc[0]-s*cc/2, loc[1]], box=None)
-    draw_amplitude(s*state[2], [loc[0]+s*cc/2, loc[1]], box=None)
-    draw_amplitude(s*state[3], [loc[0], loc[1]-s*cc/2], box=None)
+    draw_amplitude(s*state[0], [loc[0], loc[1]+s*cc/2])
+    draw_amplitude(s*state[1], [loc[0]-s*cc/2, loc[1]])
+    draw_amplitude(s*state[2], [loc[0]+s*cc/2, loc[1]])
+    draw_amplitude(s*state[3], [loc[0], loc[1]-s*cc/2])
+
+    #if label is not None:
+    #    plt.text(loc[0]-s*.75, loc[1]-5.5*s, label, horizontalalignment='left')
+
+    if label is not None:
+        text_loc = (loc[0]-s*.75,loc[1]-6*s)
+        plt.text(text_loc[0],
+                 text_loc[1],
+                 label,
+                 horizontalalignment='left',
+                 verticalalignment='bottom')
+
+        # invisible marker, since python does include text when scaling
+        plt.plot(text_loc[0],text_loc[1],alpha=0)
 
 
 def draw_statevector8(state=None,
                       location=[0, 0],
                       layout=None,
                       border_color=None,
-                      scale=1.0):
+                      scale=1.0,
+                      label=None):
     cmap = plt.get_cmap('tab10')
 
     if border_color is None:
@@ -390,7 +621,8 @@ def draw_statevector16(state=None,
                        location=[0, 0],
                        layout=None,
                        border_color=None,
-                       scale=1.0):
+                       scale=1.0,
+                       label=None):
 
     cmap = plt.get_cmap('tab10')
 
@@ -403,80 +635,16 @@ def draw_statevector16(state=None,
                       scale=.9,
                       border_color=qubit_cmap[3])
 
+    if label is not None:
+        text_loc = (loc[0]-s*.75,loc[1]-6*s)
+        plt.text(text_loc[0],
+                 text_loc[1],
+                 label,
+                 horizontalalignment='left',
+                 verticalalignment='bottom')
 
-def draw_statevector(state,
-                     loc=[0, 0],
-                     layout=None,
-                     delta=.1,
-                     border_color=None):
-    """ Draws states (arrays of complex numbers) on a grid.
-        If states contain strings, the values of the strings will be displayed instead,
-        (useful for labeling state space).
-        The grid can be specified as 'r' (rectangular), the default to 1 qubit,
-        or 'd' (diamond), the default for 2 or more qubits.
-        Location specifies the location of the state[0],
-        which is at the top (center or left) of the layout."""
-    # currently only works with 4D vectors (two qubits)
-    d = state.size  # the dimension of the problem (number of states)
-
-    # discrete colormap, for the border colors
-    cmap = plt.get_cmap('tab10')
-
-    if d == 4:
-        if border_color is None:
-            # color not passed in, use the default
-            border_color_a = qubit_cmap[0]
-            border_color_b = qubit_cmap[1]
-        else:
-            border_color_a = border_color
-            border_color_b = border_color
-
-        draw_amplitude(state[0], [loc[0]+0, loc[1]+np.sqrt(2)], 'd', border_color_a)
-        draw_amplitude(state[1], [loc[0]-np.sqrt(2), loc[1]+0], 'd', border_color_a)
-        draw_amplitude(state[2], [loc[0]+np.sqrt(2), loc[1]+0], 'd', border_color_b)
-        draw_amplitude(state[3], [loc[0]+0, loc[1]-np.sqrt(2)], 'd', border_color_b)
-    elif d == 8:
-        if border_color is None:
-            # color not passed in, use the default
-            border_color_top = None  # default
-            border_color_bot = cmap(2)  # iterate one color
-        else:
-            border_color_top = border_color
-            border_color_bot = border_color
-
-        draw_statevector(state[:4],
-                         loc,
-                         layout=None,
-                         border_color=border_color_top)
-        # bottorm (shifted down)
-        draw_statevector(state[4:], [loc[0], loc[1]-4*np.sqrt(2)-delta],
-                         layout=None,
-                         border_color=border_color_bot)
-    elif d == 16:
-        if border_color is None:
-            # color not passed in, use the default
-            border_color_a = None  # default
-            border_color_b = qubit_cmap[4]  # iterate one color
-        else:
-            border_color_a = border_color
-            border_color_b = border_color
-        # top
-        draw_statevector(state[:8],
-                         loc,
-                         layout=None,
-                         border_color=border_color_a)
-        # bottom (shifted down and right)
-        draw_statevector(state[8:], [loc[0]+2*np.sqrt(2)+delta*2, loc[1]-2*np.sqrt(2)-delta/2],
-                         layout=None,
-                         border_color=border_color_b)
-    elif d == 32:
-        # top
-        draw_statevector(state[:16], loc, layout=None)
-        # bottom (shifted down and right)
-        draw_statevector(state[16:],
-                         [loc[0], loc[1]-8*np.sqrt(2)-delta*4],
-                         layout=None,
-                         border_color=cmap(3))
+        # invisible marker, since python does include text when scaling
+        plt.plot(text_loc[0],text_loc[1],alpha=0)
 
 
 def state_to_str(state, n_qubits=4, ket=True):
@@ -576,67 +744,3 @@ def make_state_list(circuit, include_initial_state=True):
         states = [initial_state]+states
 
     return states
-
-
-# def draw_qubit(value, location=[0, 0], box='diamond', color=None, tol=1e-7):
-#     """ draw a sphere with area, representing a qbit
-#     """
-#     plt.gca().set_aspect(1)
-#     plt.axis('off')
-
-#     # draw the bounding box
-#     if box is not None:
-#         # assume it is a diamond
-#         plt.plot([location[0]+np.sqrt(2), location[0]], [location[1],
-#                                                          location[1]+np.sqrt(2)], color='black', linewidth=.2)
-#         plt.plot([location[0], location[0]-np.sqrt(2)], [location[1] +
-#                                                          np.sqrt(2), location[1]], color='black', linewidth=.2)
-#         plt.plot([location[0]-np.sqrt(2), location[0]], [location[1],
-#                                                          location[1]-np.sqrt(2)], color='black', linewidth=.2)
-#         plt.plot([location[0], location[0]+np.sqrt(2)], [location[1] -
-#                                                          np.sqrt(2), location[1]], color='black', linewidth=.2)
-
-#     # get amplitude and phase [-π,π], real numbers
-#     r = np.abs(value)
-#     phase = cmath.phase(value)
-
-#     if r < tol:
-#         # radius is too small, nothing to plot
-#         return
-
-#     # find a color to correspond to this phase
-#     # use 'twilight' or 'twilight_shifted' which are cyclic
-#     cmap = plt.get_cmap('twilight')
-#     color = cmap(phase/(2*np.pi)+.5)
-
-#     # draw the circle (outline and fill)
-#     angles = np.linspace(0, np.pi)
-#     x = r*np.cos(angles)
-#     y = r*np.sin(angles)
-
-#     plt.plot(location[0]+x, location[1]+y, linewidth=r/2, color='black')  # top
-#     plt.plot(location[0]+x, location[1]-y,
-#              linewidth=r/2, color='black')  # bottom
-
-#     plt.fill_between(location[0]+x, location[1]+y,
-#                      location[1]-y, color=color, alpha=.5)  # fill
-
-#     # draw the dial
-#     dial_end = (location[0]+r*np.cos(phase), location[1]+r*np.sin(phase))
-#     plt.plot((location[0], dial_end[0]), (location[1],
-#                                           dial_end[1]), color='black', linewidth=r)
-
-# def display_statevector(statevector, location=[0, 0], labels=None):
-#     """ currently only works with 4D vectors (two qubits)
-#     """
-#     draw_qubit(statevector[0], [location[0]+0, location[1]+np.sqrt(2)])
-#     draw_qubit(statevector[1], [location[0]-np.sqrt(2), location[1]+0])
-#     draw_qubit(statevector[2], [location[0]+np.sqrt(2), location[1]+0])
-#     draw_qubit(statevector[3], [location[0]+0, location[1]-np.sqrt(2)])
-
-#     if labels is not None:
-#         plt.text(location[0]+2, location[1]+2, labels[0],
-#                  fontsize=7, ha='left', va='center')
-#         plt.text(location[0]-2, location[1]+2, labels[1],
-#                  fontsize=7, ha='right', va='center')
-#     return
