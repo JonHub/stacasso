@@ -194,7 +194,7 @@ def highlight(circuit, title=None, indent=4, horizontal_spacing=6):
     diagram = diagram.replace('─@─', '─<span style="color:MediumSlateBlue">@</span>─')
     # color M symbol
     diagram = diagram.replace(
-        '─M─', '─<span style="background-color:WhiteSmoke;color:Maroon;fontweight:bold">M</span>─')
+        '─M─', '─<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>─')
     # <span style="color:green;font-weight:bold">@</span>
 
     # add the title, last
