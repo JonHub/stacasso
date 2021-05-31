@@ -24,10 +24,23 @@ so.illustrate( qrng_circuit, labels )
 
 <pre><span style="white-space:pre;"><span style="color:Maroon">"Quantum Random Number Generator (QRNG)"</span><br><br>    <span style="background-color:WhiteSmoke;color:Blue">qubit 0</span>: ──────H──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<br></span></pre>
 
+<div>
+<img
+    title="quantum random number generator"
+    alignment="left"
+    src="notebooks/qrng_illustration.svg"
+    margin=0
+    padding=0
+>
+</div>
 
-<img title="quantum random number generator" align="left" src="notebooks/qrng_illustration.svg">
-
-<p>
+<div>
+<img
+    title="quantum random number generator"
+    alignment="left"
+    src="notebooks/qrng_illustration.svg"
+>
+</div>
 
 ```python
 # Bell Example
@@ -52,27 +65,36 @@ so.illustrate(bell_circuit, labels)
 <pre><span style="white-space:pre;"><span style="color:Maroon">"Bell State"</span><br><br>    <span style="background-color:WhiteSmoke;color:Blue">q0</span>: ──────H──────<span style="color:MediumSlateBlue">@</span>──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<br>                     │      │<br>    <span style="background-color:WhiteSmoke;color:DarkOrange">q1</span>: ─────────────X──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<br></span></pre>
 
 
-<img title="bell circuit" align="left" alt="Alt text" src="notebooks/bell_illustration.svg">
-
-<p>
+<div>
+<img
+    title="Bell Circuit"
+    alignment="left"
+    src="notebooks/bell_illustration.svg"
+>
+</div>
 
 <pre><span style="white-space:pre;"><span style="color:Maroon">"Quantum Teleportation"</span><br><br>    <span style="background-color:WhiteSmoke;color:Blue">A (msg)</span>: ────────────────────X^0.3──────<span style="color:MediumSlateBlue">@</span>──────H──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>─────────────<span style="color:MediumSlateBlue">@</span>──────<br>                                            │             │             │<br>    <span style="background-color:WhiteSmoke;color:DarkOrange">B (ali)</span>: ──────H──────<span style="color:MediumSlateBlue">@</span>─────────────────X─────────────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<span style="color:MediumSlateBlue">@</span>──────┼──────<br>                          │                                      │      │<br>    <span style="background-color:WhiteSmoke;color:ForestGreen">M (bob)</span>: ─────────────X──────────────────────────────────────X──────<span style="color:MediumSlateBlue">@</span>──────<br></span></pre>
 
+<div>
+<img
+    title="quantum teleportation"
+    alignment="left"
+    src="notebooks/tele_illustration.svg"
+>
+</div>
 
-<img title="quantum teleportation" align="left" alt="Alt text" src="notebooks/tele_illustration.svg">
 
 <p>
 
 <pre><span style="white-space:pre;"><span style="color:Maroon">"HLF 2D"</span><br><br>    <span style="background-color:WhiteSmoke;color:Blue">0</span>: ──────H────────────────────H──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<br>    <br>    <span style="background-color:WhiteSmoke;color:DarkOrange">1</span>: ──────H────────────────────H──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<br>    <br>    <span style="background-color:WhiteSmoke;color:ForestGreen">2</span>: ──────H──────<span style="color:MediumSlateBlue">@</span>──────S──────H──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<br>                    │<br>    <span style="background-color:WhiteSmoke;color:DarkRed">3</span>: ──────H──────<span style="color:MediumSlateBlue">@</span>──────S──────H──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<br></span></pre>
 
-<img title="hidden linear function 2D" align="left" alt="Alt text" src="notebooks/hlf2d_illustration.svg">
-
-
-
-
-
-
-
+<div>
+<img
+    title="hidden linear function 2D"
+    alignment="left"
+    src="notebooks/hlf2d_illustration.svg"
+>
+</div>
 
 
 
@@ -127,7 +149,7 @@ so.illustrate(rng_circuit)
 
 ```
 
-<rng circuit>
+> rng circuit
 
 State space is drawn as a grid below the circuit (like a game board).  Probabilities are visualized as colored disks, with the area proportional to the probability of being in that state, if measured.  The phase of the underlying amplitude in encoded in the disk color, as well as the orientation of the "dial" (radius) of the disk.
 
@@ -144,7 +166,7 @@ so.illustrate(bell_circuit, labels = ['$', '$psi_bell$',]  )
 
 ```
 
-<bell circuit>
+> bell circuit
 
 Note that for circuits with two or more qubit circuits, `Stacasso` draws the state space matrix rotated by 45 degrees, for visual clarity.
 
@@ -162,7 +184,7 @@ Stacasso currently supports visualizations of up to four qubit circuits, with pl
 so.show_state_spaces()
 ```
 
-<state spaces>
+> state spaces
 
 In quantum computing, each pure state correspond to a unique value of the qbits.  For a three qubit computer, the state `111` is often simply called $7$, for simplicity.  Quantum circuits generally start with all qubits in state `0`, by convention.  This state, the initial state, is always drawn at the top of the game board.
 
