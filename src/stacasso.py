@@ -206,10 +206,13 @@ def highlight(circuit, title=None, indent=4, horizontal_spacing=6):
     # used in syntax highlighting / markdown in jupyter notebook
     # also, wrap with the 'white-space:pre' style, which prevents line wrapping
     
-    # background and fontsize need to be set explicitly (same values used in jupyter notebook),
+    # background, font-size, font-family need to be set explicitly (same values used in jupyter notebook),
     # so they will render correctly as html in other files
 
-    diagram = '<pre style="white-space:pre;font-size:small;background:white">' + diagram + '</pre>'
+    
+
+    diagram = '<pre style="white-space:pre;font-size:medium;background:white;line-height:normal;font-family:monospace;">' \
+               + diagram + '</pre>'
 
     # ... aaaand, wrap it all in a <div> block
     # this overrides the background of any page the text is embedded in

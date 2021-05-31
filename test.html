@@ -13,25 +13,51 @@
 
     <body>
 
-        before code
+        Gives the following output (syntax highlighted circuit, and illustration):
 
-        <div> 
-            <pre style="background:none;font-size:small;white-space:pre;"><span style="color:Maroon">"Quantum Random Number Generator (QRNG)"</span><br><br>    <span style="background-color:WhiteSmoke;color:Blue">qubit 0</span>: ──────H──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<br></pre>
+        <div>
+            <pre
+                style="white-space:pre;font-size:small;background:white">  <span style="color:Maroon">Bell State</span><br><br>    <span style="background-color:WhiteSmoke;color:Blue">q0</span>: ──────H──────<span style="color:MediumSlateBlue">@</span>──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<br>                     │      │<br>    <span style="background-color:WhiteSmoke;color:DarkOrange">q1</span>: ─────────────X──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<br></pre>
         </div>
 
-        after code
+        newer (setting font)
+        <div>
+            <pre
+                style="white-space:pre;font-size:medium;background:white;line-height:normal;font-family:monospace;">  <span style="color:Maroon">Bell State</span><br><br>    <span style="background-color:WhiteSmoke;color:Blue">q0</span>: ──────H──────<span style="color:MediumSlateBlue">@</span>──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<br>                     │      │<br>    <span style="background-color:WhiteSmoke;color:DarkOrange">q1</span>: ─────────────X──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<br></pre>
+        </div>
 
         <div>
             <img
-                title="quantum random number generator"
+                title="Bell Circuit"
                 alignment="left"
-                src="notebooks/qrng_illustration.svg"
+                src="notebooks/bell_illustration.svg"
                 margin=0
                 padding=0
             >
         </div>
 
-        after image
+        A more complex problem is the HLF2D:
+
+        newer, setting monospace
+
+        <div>
+            <pre
+                style="white-space:pre;font-size:medium;background:white;line-height:normal;font-family:monospace;">  <span style="color:Maroon">"HLF 2D"</span><br><br>    <span style="background-color:WhiteSmoke;color:Blue">0</span>: ──────H──────<span style="color:MediumSlateBlue">@</span>──────<span style="color:MediumSlateBlue">@</span>─────────────S──────H──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<br>                    │      │<br>    <span style="background-color:WhiteSmoke;color:DarkOrange">1</span>: ──────H──────<span style="color:MediumSlateBlue">@</span>──────┼──────<span style="color:MediumSlateBlue">@</span>──────S──────H──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<br>                           │      │<br>    <span style="background-color:WhiteSmoke;color:ForestGreen">2</span>: ──────H─────────────<span style="color:MediumSlateBlue">@</span>──────<span style="color:MediumSlateBlue">@</span>──────S──────H──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<br></pre>
+        </div>
+
+        <div>
+            <img
+                title="hidden linear function 2D"
+                alignment="left"
+                src="notebooks/hlf2d_illustration.svg"
+            >
+        </div>
+
+
+        Stacasso is a Python library for visualizing quantum circuits. Includes syntax highlighting to pretty-print
+        circuit diagrams, as well as tools to illustrate and visualize quantum computation algorithms.
+
+
 
 
     </body>
