@@ -9,7 +9,7 @@ import cirq
 import stacasso as so
 
 # start with a circuit, created with cirq
-circuit_qrng = so.make_quantum_random_number_generator()
+
 
 # label the states (optional)
 labels = ['$\psi_0$', '', '$\psi_M$']
@@ -24,9 +24,11 @@ so.illustrate( qrng_circuit, labels )
 
 <pre><span style="white-space:pre;"><span style="color:Maroon">"Quantum Random Number Generator (QRNG)"</span><br><br>    <span style="background-color:WhiteSmoke;color:Blue">qubit 0</span>: ──────H──────<span style="background-color:WhiteSmoke;color:Maroon;fontweight:bold">M</span>──────<br></span></pre>
 
-<img title="a title" align="left" alt="Alt text" src="notebooks/rng_illustration.svg">
+<br>
 
+<img title="quantum random number generator" align="left" src="notebooks/bell_illustration.svg">
 
+<br>
 
 ```python
 # Bell Example
@@ -46,29 +48,26 @@ so.illustrate(bell_circuit, labels)
 
 ```
 
+<br>
 
 <pre><span style="white-space:pre;"><span style="color:Maroon">"Bell State"</span><br><br>    <span style="background-color:WhiteSmoke;color:Blue">q0</span>: ──────H──────<span style="color:MediumSlateBlue">@</span>──────<span style="background-color:WhiteSmoke;color:Maroon;fontweight:bold">M</span>──────<br>                     │      │<br>    <span style="background-color:WhiteSmoke;color:DarkOrange">q1</span>: ─────────────X──────<span style="background-color:WhiteSmoke;color:Maroon;fontweight:bold">M</span>──────<br></span></pre>
 
-<img title="a title" align="left" alt="Alt text" src="notebooks/bell_illustration.svg">
+<br>
 
+<img title="bell circuit" align="left" alt="Alt text" src="notebooks/bell_illustration.svg">
 
-
-### Gallery
-
-
-
+<br>
 
 <pre><span style="white-space:pre;"><span style="color:Maroon">"Quantum Teleportation"</span><br><br>    <span style="background-color:WhiteSmoke;color:Blue">A (msg)</span>: ────────────────────X^0.3──────<span style="color:MediumSlateBlue">@</span>──────H──────<span style="background-color:WhiteSmoke;color:Maroon;fontweight:bold">M</span>─────────────<span style="color:MediumSlateBlue">@</span>──────<br>                                            │             │             │<br>    <span style="background-color:WhiteSmoke;color:DarkOrange">B (ali)</span>: ──────H──────<span style="color:MediumSlateBlue">@</span>─────────────────X─────────────<span style="background-color:WhiteSmoke;color:Maroon;fontweight:bold">M</span>──────<span style="color:MediumSlateBlue">@</span>──────┼──────<br>                          │                                      │      │<br>    <span style="background-color:WhiteSmoke;color:ForestGreen">M (bob)</span>: ─────────────X──────────────────────────────────────X──────<span style="color:MediumSlateBlue">@</span>──────<br></span></pre>
 
+<br>
 
-
-<img title="a title" align="left" alt="Alt text" src="notebooks/tele_illustration.svg">
-
+<img title="quantum teleportation" align="left" alt="Alt text" src="notebooks/tele_illustration.svg">
 
 
 <pre><span style="white-space:pre;"><span style="color:Maroon">"HLF 2D"</span><br><br>    <span style="background-color:WhiteSmoke;color:Blue">0</span>: ──────H────────────────────H──────<span style="background-color:WhiteSmoke;color:Maroon;fontweight:bold">M</span>──────<br>    <br>    <span style="background-color:WhiteSmoke;color:DarkOrange">1</span>: ──────H────────────────────H──────<span style="background-color:WhiteSmoke;color:Maroon;fontweight:bold">M</span>──────<br>    <br>    <span style="background-color:WhiteSmoke;color:ForestGreen">2</span>: ──────H──────<span style="color:MediumSlateBlue">@</span>──────S──────H──────<span style="background-color:WhiteSmoke;color:Maroon;fontweight:bold">M</span>──────<br>                    │<br>    <span style="background-color:WhiteSmoke;color:DarkRed">3</span>: ──────H──────<span style="color:MediumSlateBlue">@</span>──────S──────H──────<span style="background-color:WhiteSmoke;color:Maroon;fontweight:bold">M</span>──────<br></span></pre>
 
-<img title="a title" align="left" alt="Alt text" src="notebooks/hlf_illustration.svg">
+<img title="hidden linear function 2D" align="left" alt="Alt text" src="notebooks/hlf2d_illustration.svg">
 
 
 
@@ -84,7 +83,7 @@ Stacasso is a Python library for visualizing quantum circuits.  Includes syntax 
 The project is free and open source (on [GitHub](https://github.com/JonHub/stacasso)).  Documentation can also be viewed online:
 
 * **[Stacasso README](https://jonhub.github.io/stacasso/)** (this file)
-* [Stacasso Tutorial (Notebook)](https://jonhub.github.io/stacasso/code/stacasso_introduction.html) (Introduction and Users's Guide, with Examples)
+* [Stacasso Tutorial (Notebook)](https://jonhub.github.io/stacasso/notebooks/stacasso_guide.html) (Introduction and Users's Guide, with Examples)
 
 > NOTE, Stacasso is currently *alpha* code!  This is an initial, pre-release, to demonstrate features and get feedback. Attempts will be made do document missing features / upcoming features, but be aware that code and interface may change.
 
