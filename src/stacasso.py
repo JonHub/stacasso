@@ -205,7 +205,7 @@ def highlight(circuit, title=None, indent=4, horizontal_spacing=6):
     # (and to render the whitespace) ... <pre> is the html way to render code
     # also, wrap with the 'white-space:pre' style, which prevents line wrapping
 
-    diagram = '<pre><span style="white-space:pre;">' + diagram + '</style></pre>'
+    diagram = '<pre><span style="white-space:pre;">' + diagram + '</span></pre>'
 
     return diagram
 
