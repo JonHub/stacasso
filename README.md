@@ -1,7 +1,7 @@
 ### Stacasso README
 
 
-Stacasso is a Python library for visualizing quantum computing circuits.  This includes syntax highlighting, as well as  illustrating the evolving statevector as the algorithm executes.
+Stacasso is a Python library for visualizing quantum computing circuits.  This includes syntax highlighting, as well as  illustrating the evolving wavefunction as the algorithm executes.
 
 The main repository resides on [GitHub](https://github.com/JonHub/stacasso).  The documentation (contained in the repository) is also rendered into `.html`, and is best viewed online (rather than rendered by GitHub):
 
