@@ -23,6 +23,60 @@ import re
 qubit_cmap = ['Blue', 'DarkOrange', 'ForestGreen', 'DarkRed', 'Purple', 'Brown']
 
 
+def unscramble_wavefunction(wavefunction):
+    """ the state ordering within the wavefunctions (complex numpy array) 
+        returned by cirq's simulate() function are not in standard sequential counting order
+        (0, 1, 2), but are scrambled
+        this function takes a wavefunction of arbitrary qubit legnth, and orders
+        the entries in sequential state order
+
+        see:
+          https://quantumai.google/cirq/simulation#qubit_and_amplitude_ordering
+    """
+    # qubits are listed on the screen with the lowest value qubit at the top
+    # (qubit number increases, going down)
+    # write the state as a binary string, then convert to an integer
+    n_states = wavefunction.size
+    scrambled_state_order = []
+
+    # works up to four qubits
+    # ... there is probably an easier/more efficient way of making the list, but this works
+    for q0 in [0, 1]:
+        if n_states == 2:
+            state_string_binary = str(q0)
+            state_integer = int(state_string_binary, 2)  # converts to int
+            scrambled_state_order.append(state_integer)
+        for q1 in [0, 1]:
+            if n_states == 4:
+                state_string_binary = str(q1) + str(q0)
+                state_integer = int(state_string_binary, 2)  # converts to int
+                scrambled_state_order.append(state_integer)
+            for q2 in [0, 1]:
+                if n_states == 8:
+                    state_string_binary = str(q2) + str(q1) + str(q0)
+                    state_integer = int(state_string_binary, 2)  # converts to int
+                    scrambled_state_order.append(state_integer)
+                for q3 in [0, 1]:
+                    if n_states == 16:
+                        state_string_binary = str(q3) + str(q2) + str(q1) + str(q0)
+                        state_integer = int(state_string_binary, 2)  # converts to int
+                        scrambled_state_order.append(state_integer)
+
+    #print(scrambled_state_order)
+    #print(wavefunction)
+
+    # to unscramble, sort the wavefunction (as a list)
+    # by the scrambled_state_order
+
+    # actually unscramble, here
+    wavefunction_unscrambled = [pair[1] for pair in sorted(zip(scrambled_state_order,wavefunction))]
+
+    # convert back to numpy array
+    wavefunction_unscrambled = np.array(wavefunction_unscrambled)
+
+    return wavefunction_unscrambled
+
+
 def illustrate(circuit, labels=None, offset_ends=False):
 
     # simulate the circuit
@@ -622,19 +676,22 @@ def indent_text(text, spaces=4):
     return text
 
 
-def make_wavefunction_list(circuit, include_initial_state=True):
+def make_wavefunction_list(circuit, include_initial_wavefunction=True):
     """ simulate the circuit, keeping track of the state vectors at ench step"""
-    states = []
+    wavefunctions = []
     simulator = cirq.Simulator()
+
     for i, step in enumerate(simulator.simulate_moment_steps(circuit)):
-        states.append(step.state_vector())
+        wavefunction_scrambled = step.state_vector()
+        wavefunction = unscramble_wavefunction( wavefunction_scrambled )
+        wavefunctions.append(wavefunction)
 
-    if include_initial_state:
-        initial_state = states[0]*0  # create a blank vector
-        initial_state[0] = 1
-        states = [initial_state]+states
+    if include_initial_wavefunction:
+        initial_wavefunction = wavefunctions[0]*0  # create a blank vector
+        initial_wavefunction[0] = 1
+        wavefunctions = [initial_wavefunction]+wavefunctions
 
-    return states
+    return wavefunctions
 
 
 #
