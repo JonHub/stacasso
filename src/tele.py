@@ -58,7 +58,7 @@ def test():
     """Visualize the teleportation circuit."""
     # Gate to put the message qubit in some state to send.
     #gate = cirq.X ** 0.25
-    gate = cirq.X ** 2
+    gate = cirq.X ** .3
 
     # Create the teleportation circuit.
     circuit = make_quantum_teleportation_circuit(gate)

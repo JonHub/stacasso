@@ -1,68 +1,11 @@
 ### Stacasso README
 
-
-```python
-# Bell Example
-import stacasso as so
-
-# create the circuit (using cirq)
-bell_circuit = so.make_bell_circuit()
-
-# label the states (optional)
-labels = ['$\psi_0$',
-          '',
-          '$\psi_{Bell}$',
-          '$\psi_M$']
-
-so.pprint(bell_circuit)
-so.illustrate(bell_circuit, labels)
-
-```
-
-Gives the following output (syntax highlighted circuit, and illustration):
-
-<div>
-<pre style="white-space:pre;font-size:small;background:white">  <span style="color:Maroon">Bell State</span><br><br>    <span style="background-color:WhiteSmoke;color:Blue">q0</span>: ──────H──────<span style="color:MediumSlateBlue">@</span>──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<br>                     │      │<br>    <span style="background-color:WhiteSmoke;color:DarkOrange">q1</span>: ─────────────X──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<br></pre>
-</div>
-
-newer (setting font)
-<div>
-<pre style="white-space:pre;font-size:medium;background:white;line-height:normal;font-family:monospace;">  <span style="color:Maroon">Bell State</span><br><br>    <span style="background-color:WhiteSmoke;color:Blue">q0</span>: ──────H──────<span style="color:MediumSlateBlue">@</span>──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<br>                     │      │<br>    <span style="background-color:WhiteSmoke;color:DarkOrange">q1</span>: ─────────────X──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<br></pre>
-</div>
-
-<div>
-<img
-    title="Bell Circuit"
-    alignment="left"
-    src="notebooks/bell_illustration.svg"
-    margin=0
-    padding=0
->
-</div>
-
-A more complex problem is the HLF2D:
-
-newer, setting monospace
-
-<div>
-<pre style="white-space:pre;font-size:medium;background:white;line-height:normal;font-family:monospace;">  <span style="color:Maroon">"HLF 2D"</span><br><br>    <span style="background-color:WhiteSmoke;color:Blue">0</span>: ──────H──────<span style="color:MediumSlateBlue">@</span>──────<span style="color:MediumSlateBlue">@</span>─────────────S──────H──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<br>                    │      │<br>    <span style="background-color:WhiteSmoke;color:DarkOrange">1</span>: ──────H──────<span style="color:MediumSlateBlue">@</span>──────┼──────<span style="color:MediumSlateBlue">@</span>──────S──────H──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<br>                           │      │<br>    <span style="background-color:WhiteSmoke;color:ForestGreen">2</span>: ──────H─────────────<span style="color:MediumSlateBlue">@</span>──────<span style="color:MediumSlateBlue">@</span>──────S──────H──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<br></pre>
-</div>
-
-<div>
-<img
-    title="hidden linear function 2D"
-    alignment="left"
-    src="notebooks/hlf2d_illustration.svg"
->
-</div>
-
-
 Stacasso is a Python library for visualizing quantum circuits.  Includes syntax highlighting to pretty-print circuit diagrams, as well as tools to illustrate and visualize quantum computation algorithms.
 
 The project is free and open source (on [GitHub](https://github.com/JonHub/stacasso)).  Documentation can also be viewed online:
 
 * **[Stacasso README](https://jonhub.github.io/stacasso/)** (this file)
-* [Stacasso Tutorial (Notebook)](https://jonhub.github.io/stacasso/notebooks/stacasso_guide.html) (Introduction and Users's Guide, with Examples)
+* [Stacasso Guide (Notebook)](https://jonhub.github.io/stacasso/notebooks/stacasso_guide.html) (Introduction and Users's Guide, with Examples)
 
 > NOTE, Stacasso is currently *alpha* code!  This is an initial, pre-release, to demonstrate features and get feedback. Attempts will be made do document missing features / upcoming features, but be aware that code and interface may change.
 
@@ -95,39 +38,87 @@ You should now be able to execute the `stacasso_introduction` notebook.  Note th
 
 #### Examples
 
+##### Quantum Random Number Generator (1-qubit)
+
 We can make and illustrate a simple 1 qubit quantum circuit with:
 
 ```python
-import cirq
-import Stacasso as so
+# Quantum Random Number Generater 
 
-rng_circuit = so.make_rng_circuit()
+# first, make the circuit, using cirq
+qrng_circuit = cirq.Circuit()
+q0 = cirq.NamedQubit('qubit 0')
+qrng_circuit.append(cirq.H(q0))
+qrng_circuit.append(cirq.measure(q0))
 
-so.pprint(rng_circuit)
-so.illustrate(rng_circuit)
+# labeling the states is optional
+labels = ['$\psi_0$', '', '$\psi_M$']
 
+# print and illustrate with Stacasso
+so.pprint( qrng_circuit, '"Quantum Random Number Generator (QRNG)"' )
+so.illustrate( qrng_circuit, labels )
 ```
 
-> rng circuit
+<div>
+<pre style="white-space:pre;font-size:medium;background:white;line-height:normal;font-family:monospace;">  <span style="color:Maroon">"Quantum Random Number Generator (QRNG)"</span><br><br>    <span style="background-color:WhiteSmoke;color:Blue">qubit 0</span>: ──────H──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<br></pre>
+</div>
+
+<div><img title="quantum random number generator" alignment="left" src="notebooks/qrng_illustration_keep.svg"></div>
 
 State space is drawn as a grid below the circuit (like a game board).  Probabilities are visualized as colored disks, with the area proportional to the probability of being in that state, if measured.  The phase of the underlying amplitude in encoded in the disk color, as well as the orientation of the "dial" (radius) of the disk.
+
+##### Bell Circuit (2-qubits)
 
 The above circuit can be extended, by entangling the first qubit with a second.  This creates the classic Bell State, and the circuit demonstrates many fundamental quantum computing concepts.  (Initial state, superposition, entanglement, and collapse.)
 
 ```python
-import cirq
-import Stacasso as so
+# Bell Circuit
 
-rng_circuit = so.make_bell_circuit()
+bell_circuit = so.make_bell_circuit()
 
-so.pprint(bell_circuit)
-so.illustrate(bell_circuit, labels = ['$', '$psi_bell$',]  )
+# make labels (optional)
+labels = ['$\psi_0$',
+          '',
+          '$\psi_{Bell}$',
+          '$\psi_M$']
+
+so.pprint(bell_circuit,'"Bell State Circuit"')
+so.illustrate(bell_circuit, labels)
 
 ```
 
-> bell circuit
+<div>
+<pre style="white-space:pre;font-size:medium;background:white;line-height:normal;font-family:monospace;">  <span style="color:Maroon">Bell State</span><br><br>    <span style="background-color:WhiteSmoke;color:Blue">q0</span>: ──────H──────<span style="color:MediumSlateBlue">@</span>──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<br>                     │      │<br>    <span style="background-color:WhiteSmoke;color:DarkOrange">q1</span>: ─────────────X──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<br></pre>
+</div>
+
+<div><img title="bell circuit" alignment="left" src="notebooks/bell_illustration_keep.svg"></div>
 
 Note that for circuits with two or more qubit circuits, `Stacasso` draws the state space matrix rotated by 45 degrees, for visual clarity.
+
+##### Quantum Teleportation (3-qubits)
+
+Still being debugged (and cirq scrambles qubit order, need to unscamble)
+
+<div>
+<pre style="white-space:pre;font-size:medium;background:white;line-height:normal;font-family:monospace;">  <span style="color:Maroon">"Quantum Teleportation"</span><br><br>    <span style="background-color:WhiteSmoke;color:Blue">A (msg)</span>: ────────────────────X^0.3──────<span style="color:MediumSlateBlue">@</span>──────H──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>─────────────<span style="color:MediumSlateBlue">@</span>──────<br>                                            │             │             │<br>    <span style="background-color:WhiteSmoke;color:DarkOrange">B (ali)</span>: ──────H──────<span style="color:MediumSlateBlue">@</span>─────────────────X─────────────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<span style="color:MediumSlateBlue">@</span>──────┼──────<br>                          │                                      │      │<br>    <span style="background-color:WhiteSmoke;color:ForestGreen">M (bob)</span>: ─────────────X──────────────────────────────────────X──────<span style="color:MediumSlateBlue">@</span>──────<br></pre>
+</div>
+
+<div><img title="quantum teleportation" alignment="left" src="notebooks/tele_illustration_keep.svg"></div>
+
+##### HLD 2D (n-qubits)
+
+The classic 'shallow code' ... still has qubit scramble
+
+<div>
+<pre style="white-space:pre;font-size:medium;background:white;line-height:normal;font-family:monospace;">  <span style="color:Maroon">"HLF 2D"</span><br><br>    <span style="background-color:WhiteSmoke;color:Blue">0</span>: ──────H──────<span style="color:MediumSlateBlue">@</span>──────<span style="color:MediumSlateBlue">@</span>─────────────S──────H──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<br>                    │      │<br>    <span style="background-color:WhiteSmoke;color:DarkOrange">1</span>: ──────H──────<span style="color:MediumSlateBlue">@</span>──────┼──────<span style="color:MediumSlateBlue">@</span>──────S──────H──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<br>                           │      │<br>    <span style="background-color:WhiteSmoke;color:ForestGreen">2</span>: ──────H─────────────<span style="color:MediumSlateBlue">@</span>──────<span style="color:MediumSlateBlue">@</span>──────S──────H──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<br>    <br>    <span style="background-color:WhiteSmoke;color:DarkRed">3</span>: ──────H──────────────────────────────────H──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<br></pre>
+</div>
+
+<div><img title="hlf2d" alignment="left" src="notebooks/hlf2d_illustration_keep.svg"></div>
+
+
+
+
+
 
 #### More Qubits
 

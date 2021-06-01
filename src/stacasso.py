@@ -85,9 +85,9 @@ def illustrate(circuit, labels=None, offset_ends=False):
     # or from the length of the moments themselves,
     # from when the dragram is first built (better option, but more code)
 
-    chars_to_length = .12
+    chars_to_length = .091  # controls the total size of the graph
 
-    offset = (circuit_start_chars + 3)  # first plot (in plot units)
+    offset = (circuit_start_chars)  # first plot (in plot units)
     spacing = 7  # game boards moments (in plot units)
 
     for s in range(len(states)):
@@ -100,7 +100,7 @@ def illustrate(circuit, labels=None, offset_ends=False):
         # scoot the ends slightly, for readability (optional)
         scoot = 0
         if offset_ends and s == 0:
-            scoot = -spacing/2
+            scoot = -spacing/3
         if offset_ends and s == len(states)-1:
             scoot = spacing/3
 
@@ -110,7 +110,7 @@ def illustrate(circuit, labels=None, offset_ends=False):
 
     # set the end of the graph to be just just after the last gameboard
     # adding "spacing" gives enough room, even if "offset_ends" is True
-    x_end = offset+s*spacing + spacing
+    x_end = offset + (s+1)*spacing
     # plt.tight_layout()
     plt.gca().set_xlim([0, x_end])
     #plt.gca().set_ylim([None, 2*np.sqrt(2)+.1])
@@ -123,6 +123,8 @@ def illustrate(circuit, labels=None, offset_ends=False):
     # but the y height is calculated from the aspect ratio
     #plt.tight_layout()
 
+    plt.tight_layout()  # needed for savefig to have the correct margin
+
     figsize_x = circuit_length_chars * chars_to_length
     y_scale = (plt.gca().get_ylim()[1]-plt.gca().get_ylim()[0]) / x_end
     figsize_y = figsize_x * y_scale
@@ -132,6 +134,7 @@ def illustrate(circuit, labels=None, offset_ends=False):
     # print(figsize_x)
     # print(figsize_y)
 
+    
     plt.gcf().set_size_inches([figsize_x, figsize_y], forward=True)
 
     # tight does not work here
@@ -208,8 +211,6 @@ def highlight(circuit, title=None, indent=4, horizontal_spacing=6):
     
     # background, font-size, font-family need to be set explicitly (same values used in jupyter notebook),
     # so they will render correctly as html in other files
-
-    
 
     diagram = '<pre style="white-space:pre;font-size:medium;background:white;line-height:normal;font-family:monospace;">' \
                + diagram + '</pre>'
@@ -452,13 +453,15 @@ def draw_statevector(state=None,
                           location=location,
                           layout=layout,
                           border_color=border_color,
-                          scale=scale)
+                          scale=scale,
+                          label=label)
     elif len(state) == 16:
         draw_statevector16(state=state,
                            location=location,
                            layout=layout,
                            border_color=border_color,
-                           scale=scale)
+                           scale=scale,
+                           label=label)
 
 
 def draw_statevector2(state=None,
@@ -611,6 +614,9 @@ def draw_statevector8(state=None,
                       label=None):
     cmap = plt.get_cmap('tab10')
 
+    loc = location
+    s = scale
+
     if border_color is None:
         border_color_a = None
         #border_color_b = cmap(2)
@@ -627,6 +633,17 @@ def draw_statevector8(state=None,
         scale=scale*.9,
         border_color=border_color_b)
 
+    if label is not None:
+        text_loc = (loc[0]-s*.75,loc[1]-11*s)
+        plt.text(text_loc[0],
+                 text_loc[1],
+                 label,
+                 horizontalalignment='left',
+                 verticalalignment='bottom')
+
+        # invisible marker, since python does include text when scaling
+        plt.plot(text_loc[0],text_loc[1],alpha=0)
+
 
 def draw_statevector16(state=None,
                        location=[0, 0],
@@ -634,6 +651,9 @@ def draw_statevector16(state=None,
                        border_color=None,
                        scale=1.0,
                        label=None):
+
+    loc = location
+    s = scale
 
     cmap = plt.get_cmap('tab10')
 
@@ -647,7 +667,7 @@ def draw_statevector16(state=None,
                       border_color=qubit_cmap[3])
 
     if label is not None:
-        text_loc = (loc[0]-s*.75,loc[1]-6*s)
+        text_loc = (loc[0]-s*.75,loc[1]-21*s)
         plt.text(text_loc[0],
                  text_loc[1],
                  label,
