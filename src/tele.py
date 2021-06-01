@@ -29,9 +29,9 @@ def make_quantum_teleportation_circuit(gate):
     # bob = cirq.NamedQubit("B")
 
     # better ordering, for the graphic
-    msg = cirq.NamedQubit("A (msg)")
-    alice = cirq.NamedQubit("B (ali)")
-    bob = cirq.NamedQubit("M (bob)")
+    msg = cirq.NamedQubit("0 (Msg)")
+    alice = cirq.NamedQubit("1 (Ali)")
+    bob = cirq.NamedQubit("2 (Bob)")
 
 
     # NOTE, for clarity, the creating of the Bell State (Entangled Photons)
