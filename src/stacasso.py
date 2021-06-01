@@ -18,53 +18,15 @@ import re
 # as well as drawing the corresponding bounding boxes in the illustration
 # https://www.w3schools.com/colors/colors_names.asp
 # Pyplot uses the some color names ...
-#  this list is losesly based on the tab10 default python color scheme
+#  this list is losely based on the tab10 default python color scheme
 #  ... colors up to six qubits so far ...
 qubit_cmap = ['Blue', 'DarkOrange', 'ForestGreen', 'DarkRed', 'Purple', 'Brown']
-
-
-def test_regex():
-    """ useful to extact a number in a string """
-
-    import re
-
-    K = '*'
-    # https://docs.python.org/3/howto/regex.html
-    regex_any_number = '-?(\d*\.)?\d+'
-
-    test_str = 'numbers 1 to 90 plus 5 minus -2 and 3.14 or -9.9'
-
-    print('original: ' + str(test_str))
-
-    # replace x with y in str
-    res = re.sub(regex_any_number, K, test_str)
-
-    print('replaced: ' + str(res))
-
-
-class HTMLFilter(HTMLParser):
-    """ class to strip html to regular text, from
-        https://stackoverflow.com/questions/14694482/converting-html-to-text-with-python
-
-    """
-
-    text = ""
-
-    def handle_data(self, data):
-        self.text += data
-
-
-def html_to_text(html_string):
-    f = HTMLFilter()
-    f.feed(html_string)
-    text_string = f.text
-    return text_string
 
 
 def illustrate(circuit, labels=None, offset_ends=False):
 
     # simulate the circuit
-    states = make_state_list(circuit)
+    wavefunctions = make_wavefunction_list(circuit)
 
     #plt.figure(figsize=[3.7, 10])
     # find out how big the circuit is,
@@ -81,7 +43,7 @@ def illustrate(circuit, labels=None, offset_ends=False):
     # find the start of the circuit
     # (starts after the qubit name)
     circuit_start_chars = len(one_line_text.split(': ─')[0]) + 2
-    # really, this shouldcome frome the max of checking all lines,
+    # really, this should come from the max of checking all lines,
     # or from the length of the moments themselves,
     # from when the dragram is first built (better option, but more code)
 
@@ -90,27 +52,27 @@ def illustrate(circuit, labels=None, offset_ends=False):
     offset = (circuit_start_chars)  # first plot (in plot units)
     spacing = 7  # game boards moments (in plot units)
 
-    for s in range(len(states)):
+    for w in range(len(wavefunctions)):
         # find the label for this state, if labels were passed in
         if labels is not None:
-            label = labels[s]
+            label = labels[w]
         else:
             label = None
 
         # scoot the ends slightly, for readability (optional)
         scoot = 0
-        if offset_ends and s == 0:
+        if offset_ends and w == 0:
             scoot = -spacing/3
-        if offset_ends and s == len(states)-1:
+        if offset_ends and w == len(wavefunctions)-1:
             scoot = spacing/3
 
-        # print(offset+s*spacing)
-        xloc = offset+s*spacing+scoot
-        draw_statevector(states[s], [xloc, 0], label=label)
+        # print(offset+w*spacing)
+        xloc = offset+w*spacing+scoot
+        draw_wavefunction(wavefunctions[w], [xloc, 0], label=label)
 
     # set the end of the graph to be just just after the last gameboard
     # adding "spacing" gives enough room, even if "offset_ends" is True
-    x_end = offset + (s+1)*spacing
+    x_end = offset + (w+1)*spacing
     # plt.tight_layout()
     plt.gca().set_xlim([0, x_end])
     #plt.gca().set_ylim([None, 2*np.sqrt(2)+.1])
@@ -121,7 +83,7 @@ def illustrate(circuit, labels=None, offset_ends=False):
     # set the (physical) figure size
     # the x width comse from the circuit,
     # but the y height is calculated from the aspect ratio
-    #plt.tight_layout()
+    # plt.tight_layout()
 
     plt.tight_layout()  # needed for savefig to have the correct margin
 
@@ -129,15 +91,7 @@ def illustrate(circuit, labels=None, offset_ends=False):
     y_scale = (plt.gca().get_ylim()[1]-plt.gca().get_ylim()[0]) / x_end
     figsize_y = figsize_x * y_scale
 
-    #if labels is not None:
-    #    figsize_y += .5  # add some, for the labels
-    # print(figsize_x)
-    # print(figsize_y)
-
-    
     plt.gcf().set_size_inches([figsize_x, figsize_y], forward=True)
-
-    # tight does not work here
 
 
 def pprint(circuit, title=None, indent=4, horizontal_spacing=6):
@@ -208,12 +162,12 @@ def highlight(circuit, title=None, indent=4, horizontal_spacing=6):
     # (and to render the whitespace) ... <pre> is the html way to render code
     # used in syntax highlighting / markdown in jupyter notebook
     # also, wrap with the 'white-space:pre' style, which prevents line wrapping
-    
+
     # background, font-size, font-family need to be set explicitly (same values used in jupyter notebook),
     # so they will render correctly as html in other files
 
     diagram = '<pre style="white-space:pre;font-size:medium;background:white;line-height:normal;font-family:monospace;">' \
-               + diagram + '</pre>'
+        + diagram + '</pre>'
 
     # ... aaaand, wrap it all in a <div> block
     # this overrides the background of any page the text is embedded in
@@ -274,93 +228,6 @@ def normalize_state(state):
         and normalizes it so that the total probabilty of the state is 1
     """
     return state / np.sqrt(np.sum(np.abs(state)**2))
-
-
-# def draw_state(state, loc=[0, 0], box=True):
-
-#     #cmap = plt.get_cmap('tab10')
-#     n = state.size  # number of states (size of state space)
-#     lw = .5  # linewidth, between states
-
-#     if n == 2:
-#         # one qubit, this is the base of the recusion
-#         plt.gca().set_aspect(1)
-#         plt.axis('off')
-
-#         # draw dividing line between two states of q0
-#         # hline is y, xmin, xmax
-#         #plt.hlines(loc[1]-1, loc[0]-.8, loc[0]+.8, cmap(0), lw=lw*.5)
-#         plt.hlines(loc[1]-1, loc[0]-.8, loc[0]+.8, qubit_cmap[0], lw=lw*.5)
-
-#         # draw the probabilities (amplitudes)
-#         draw_amplitude(state[0], [loc[0], loc[1]])
-#         draw_amplitude(state[1], [loc[0], loc[1]-2])
-
-#         corners = []
-#         corners.append([loc[0]-1, loc[1]+1])  # upper left
-#         corners.append([loc[0]+1, loc[1]+1])  # upper right
-#         corners.append([loc[0]+1, loc[1]-3])  # lower right
-#         corners.append([loc[0]-1, loc[1]-3])  # lower left
-
-#     elif n == 4:
-#         # draw one qubit motif, twice
-#         draw_state(state[:2], loc, box=False)
-#         draw_state(state[2:], [loc[0]+2, loc[1]], box=False)
-
-#         # vlines is x, ymin, ymax
-#         plt.vlines(loc[0]+1, loc[1]-2.8, loc[1]+.8, qubit_cmap[1], lw=lw*.6)
-
-#         corners = []
-#         corners.append([loc[0]-1, loc[1]+1])  # upper left
-#         corners.append([loc[0]+3, loc[1]+1])  # upper right
-#         corners.append([loc[0]+3, loc[1]-3])  # lower right
-#         corners.append([loc[0]-1, loc[1]-3])  # lower left
-
-#     elif n == 8:
-#         draw_state(state[:4], loc, box=False)
-#         draw_state(state[4:], [loc[0], loc[1]-4], box=False)
-
-#         plt.hlines(loc[1]-3, loc[0]-.8, loc[0]+2.8, qubit_cmap[2], lw=lw*.7)
-
-#         corners = []
-#         corners.append([loc[0]-1, loc[1]+1])  # upper left
-#         corners.append([loc[0]+3, loc[1]+1])  # upper right
-#         corners.append([loc[0]+3, loc[1]-7])  # lower right
-#         corners.append([loc[0]-1, loc[1]-7])  # lower left
-
-#     elif n == 16:
-#         draw_state(state[:8], loc, box=False)
-#         draw_state(state[8:], [loc[0]+4, loc[1]], box=False)
-
-#         plt.vlines(loc[0]+3, loc[1]-6.8, loc[1]+.8, qubit_cmap[3], lw=lw*.8)
-
-#         corners = []
-#         corners.append([loc[0]-1, loc[1]+1])  # upper left
-#         corners.append([loc[0]+7, loc[1]+1])  # upper right
-#         corners.append([loc[0]+7, loc[1]-7])  # lower right
-#         corners.append([loc[0]-1, loc[1]-7])  # lower left
-
-#     elif n == 32:
-#         draw_state(state[:16], loc, box=False)
-#         draw_state(state[16:], [loc[0], loc[1]+8], box=False)
-
-#         #plt.vlines(loc[0]+3, loc[1]-6.8, loc[1]+.8, cmap(3), lw=lw*.8)
-
-#         corners = []
-#         corners.append([loc[0]-1, loc[1]+1])  # upper left
-#         corners.append([loc[0]+7, loc[1]+1])  # upper right
-#         corners.append([loc[0]+7, loc[1]-7])  # lower right
-#         corners.append([loc[0]-1, loc[1]-7])  # lower left
-
-#     # draw lines between the four corners
-#     # this take some time ...
-#     if box:
-#         for c in range(4):
-#             # print(corners[c])
-#             plt.plot([corners[c][0], corners[(c+1) % 4][0]],
-#                      [corners[c][1], corners[(c+1) % 4][1]],
-#                      color='black',
-#                      linewidth=.2)
 
 
 #
@@ -426,51 +293,51 @@ def draw_amplitude(amplitude,
     return None
 
 
-def draw_statevector(state=None,
-                     location=[0, 0],
-                     layout=None,
-                     border_color=None,
-                     scale=1.0,
-                     label=None):
-    """ there is likely a better way to deal with all the gameboard types,
-        but this works for now """
-    if len(state) == 2:
-        draw_statevector2(state=state,
-                          location=location,
-                          layout=layout,
-                          border_color=border_color,
-                          scale=scale,
-                          label=label)
-    elif len(state) == 4:
-        draw_statevector4(state=state,
-                          location=location,
-                          layout=layout,
-                          border_color=border_color,
-                          scale=scale,
-                          label=label)
-    elif len(state) == 8:
-        draw_statevector8(state=state,
-                          location=location,
-                          layout=layout,
-                          border_color=border_color,
-                          scale=scale,
-                          label=label)
-    elif len(state) == 16:
-        draw_statevector16(state=state,
-                           location=location,
-                           layout=layout,
-                           border_color=border_color,
-                           scale=scale,
-                           label=label)
-
-
-def draw_statevector2(state=None,
+def draw_wavefunction(state=None,
                       location=[0, 0],
                       layout=None,
                       border_color=None,
                       scale=1.0,
                       label=None):
-    """ draws a 4 dimensional statevector, representing the probability (including phase)
+    """ there is likely a better way to deal with all the gameboard types,
+        but this works for now """
+    if len(state) == 2:
+        draw_wavefunction2(state=state,
+                           location=location,
+                           layout=layout,
+                           border_color=border_color,
+                           scale=scale,
+                           label=label)
+    elif len(state) == 4:
+        draw_wavefunction4(state=state,
+                           location=location,
+                           layout=layout,
+                           border_color=border_color,
+                           scale=scale,
+                           label=label)
+    elif len(state) == 8:
+        draw_wavefunction8(state=state,
+                           location=location,
+                           layout=layout,
+                           border_color=border_color,
+                           scale=scale,
+                           label=label)
+    elif len(state) == 16:
+        draw_wavefunction16(state=state,
+                            location=location,
+                            layout=layout,
+                            border_color=border_color,
+                            scale=scale,
+                            label=label)
+
+
+def draw_wavefunction2(state=None,
+                       location=[0, 0],
+                       layout=None,
+                       border_color=None,
+                       scale=1.0,
+                       label=None):
+    """ draws a 4 dimensional wavefunction, representing the probability (including phase)
         of being found in a given space in Hilbert space (state space), for two qubits
         With a scale of 1.0 (default), an amplitude with magnitude 1 in represented as a disk
         with radius one (full size).
@@ -516,7 +383,7 @@ def draw_statevector2(state=None,
     draw_amplitude(s*state[1], [loc[0], loc[1]-3*s])
 
     if label is not None:
-        text_loc = (loc[0]-s*.75,loc[1]-6.5*s)
+        text_loc = (loc[0]-s*.75, loc[1]-6.5*s)
         plt.text(text_loc[0],
                  text_loc[1],
                  label,
@@ -524,16 +391,16 @@ def draw_statevector2(state=None,
                  verticalalignment='bottom')
 
         # invisible marker, since python does include text when scaling
-        plt.plot(text_loc[0],text_loc[1],alpha=0)
+        plt.plot(text_loc[0], text_loc[1], alpha=0)
 
 
-def draw_statevector4(state=None,
-                      location=[0, 0],
-                      layout=None,
-                      border_color=None,
-                      scale=1.0,
-                      label=None):
-    """ draws a 4 dimensional statevector, representing the probability (including phase)
+def draw_wavefunction4(state=None,
+                       location=[0, 0],
+                       layout=None,
+                       border_color=None,
+                       scale=1.0,
+                       label=None):
+    """ draws a 4 dimensional wavefunction, representing the probability (including phase)
         of being found in a given space in Hilbert space (state space), for two qubits
         With a scale of 1.0 (default), an amplitude with magnitude 1 in represented as a disk
         with radius one (full size).
@@ -558,7 +425,6 @@ def draw_statevector4(state=None,
 
     if border_color is None:
         # this is the two qubit case
-        cmap = plt.get_cmap('tab10')
 
         # (draw blue first, upper left)
         border_color_a = qubit_cmap[1]  # cmap(1)
@@ -591,11 +457,11 @@ def draw_statevector4(state=None,
     draw_amplitude(s*state[2], [loc[0]+s*cc/2, loc[1]])
     draw_amplitude(s*state[3], [loc[0], loc[1]-s*cc/2])
 
-    #if label is not None:
+    # if label is not None:
     #    plt.text(loc[0]-s*.75, loc[1]-5.5*s, label, horizontalalignment='left')
 
     if label is not None:
-        text_loc = (loc[0]-s*.75,loc[1]-6*s)
+        text_loc = (loc[0]-s*.75, loc[1]-6*s)
         plt.text(text_loc[0],
                  text_loc[1],
                  label,
@@ -603,38 +469,34 @@ def draw_statevector4(state=None,
                  verticalalignment='bottom')
 
         # invisible marker, since python does include text when scaling
-        plt.plot(text_loc[0],text_loc[1],alpha=0)
+        plt.plot(text_loc[0], text_loc[1], alpha=0)
 
 
-def draw_statevector8(state=None,
-                      location=[0, 0],
-                      layout=None,
-                      border_color=None,
-                      scale=1.0,
-                      label=None):
-    cmap = plt.get_cmap('tab10')
-
+def draw_wavefunction8(state=None,
+                       location=[0, 0],
+                       layout=None,
+                       border_color=None,
+                       scale=1.0,
+                       label=None):
     loc = location
     s = scale
 
     if border_color is None:
         border_color_a = None
-        #border_color_b = cmap(2)
         border_color_b = qubit_cmap[2]
     else:
         border_color_a = border_color
         border_color_b = border_color
-    cmap = plt.get_cmap('tab10')
 
-    draw_statevector4(state[:4], location=location, scale=scale, border_color=border_color_a)
-    draw_statevector4(
+    draw_wavefunction4(state[:4], location=location, scale=scale, border_color=border_color_a)
+    draw_wavefunction4(
         state[4:],
         location=[location[0], location[1]-scale*np.sqrt(32)],
         scale=scale*.9,
         border_color=border_color_b)
 
     if label is not None:
-        text_loc = (loc[0]-s*.75,loc[1]-11*s)
+        text_loc = (loc[0]-s*.75, loc[1]-11*s)
         plt.text(text_loc[0],
                  text_loc[1],
                  label,
@@ -642,32 +504,30 @@ def draw_statevector8(state=None,
                  verticalalignment='bottom')
 
         # invisible marker, since python does include text when scaling
-        plt.plot(text_loc[0],text_loc[1],alpha=0)
+        plt.plot(text_loc[0], text_loc[1], alpha=0)
 
 
-def draw_statevector16(state=None,
-                       location=[0, 0],
-                       layout=None,
-                       border_color=None,
-                       scale=1.0,
-                       label=None):
+def draw_wavefunction16(state=None,
+                        location=[0, 0],
+                        layout=None,
+                        border_color=None,
+                        scale=1.0,
+                        label=None):
 
     loc = location
     s = scale
 
-    cmap = plt.get_cmap('tab10')
-
-    draw_statevector8(state[:8], location=location, scale=1)
-    # draw_statevector8(
+    draw_wavefunction8(state[:8], location=location, scale=1)
+    # draw_wavefunction8(
     #    state[8:], location=[location[0]+np.sqrt(32)/2, location[1]-np.sqrt(32)/2], scale=.9, border_color=cmap(3))
 
-    draw_statevector8(state[8:],
-                      location=[location[0], location[1]-2*np.sqrt(32)],
-                      scale=.9,
-                      border_color=qubit_cmap[3])
+    draw_wavefunction8(state[8:],
+                       location=[location[0], location[1]-2*np.sqrt(32)],
+                       scale=.9,
+                       border_color=qubit_cmap[3])
 
     if label is not None:
-        text_loc = (loc[0]-s*.75,loc[1]-21*s)
+        text_loc = (loc[0]-s*.75, loc[1]-21*s)
         plt.text(text_loc[0],
                  text_loc[1],
                  label,
@@ -675,7 +535,7 @@ def draw_statevector16(state=None,
                  verticalalignment='bottom')
 
         # invisible marker, since python does include text when scaling
-        plt.plot(text_loc[0],text_loc[1],alpha=0)
+        plt.plot(text_loc[0], text_loc[1], alpha=0)
 
 
 def state_to_str(state, n_qubits=4, ket=True):
@@ -762,7 +622,7 @@ def indent_text(text, spaces=4):
     return text
 
 
-def make_state_list(circuit, include_initial_state=True):
+def make_wavefunction_list(circuit, include_initial_state=True):
     """ simulate the circuit, keeping track of the state vectors at ench step"""
     states = []
     simulator = cirq.Simulator()
@@ -775,3 +635,45 @@ def make_state_list(circuit, include_initial_state=True):
         states = [initial_state]+states
 
     return states
+
+
+#
+# UTILITY FUNCTIONS
+#
+
+def test_regex():
+    """ useful to extact a number in a string """
+
+    import re
+
+    K = '*'
+    # https://docs.python.org/3/howto/regex.html
+    regex_any_number = '-?(\d*\.)?\d+'
+
+    test_str = 'numbers 1 to 90 plus 5 minus -2 and 3.14 or -9.9'
+
+    print('original: ' + str(test_str))
+
+    # replace x with y in str
+    res = re.sub(regex_any_number, K, test_str)
+
+    print('replaced: ' + str(res))
+
+
+class HTMLFilter(HTMLParser):
+    """ class to strip html to regular text, from
+        https://stackoverflow.com/questions/14694482/converting-html-to-text-with-python
+
+    """
+
+    text = ""
+
+    def handle_data(self, data):
+        self.text += data
+
+
+def html_to_text(html_string):
+    f = HTMLFilter()
+    f.feed(html_string)
+    text_string = f.text
+    return text_string
