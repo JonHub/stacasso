@@ -3,7 +3,7 @@
 
 Stacasso is a Python library for visualizing quantum computing circuits.  This includes syntax highlighting, as well as  illustrating the evolving statevector as the algorithm executes.
 
-The main repository resides on [GitHub](https://github.com/JonHub/stacasso).  The documentation (contained in the repository) can also be viewed online
+The main repository resides on [GitHub](https://github.com/JonHub/stacasso).  The documentation (contained in the repository) is also rendered into `.html`, and is best viewed online (rather than rendered by GitHub):
 
 * **[Stacasso README](https://jonhub.github.io/stacasso/)** (this file)
 * [Stacasso Guide (Notebook)](https://jonhub.github.io/stacasso/notebooks/stacasso_guide.html) (Introduction and Users's Guide, with Examples)
@@ -156,6 +156,3 @@ The goal is to get `Stacasso` usable, and then get it integrated into Google's c
 Larger qubits would be interesting to visualize.  In this case, the gameobard would have to be stepped (or animated).  For instance, ten qubits needs 1024 states, but could be used to show error correction, such as the Shore code (9-qubits).
 
 Larger HLF2D problems would be interesting, as well as the shallow code that ran on Google's Sycamore (need to dig out that reference).
-
-
-
