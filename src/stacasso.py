@@ -146,6 +146,9 @@ def illustrate(circuit, labels=None, offset_ends=False):
 
     plt.gcf().set_size_inches([figsize_x, figsize_y], forward=True)
 
+    # sets the facecolor (actually, background) to white, on saves
+    plt.rcParams['figure.facecolor'] = 'white'
+
 
 def pprint(circuit, title=None, indent=4, horizontal_spacing=6):
     diagram = highlight(circuit, title=title, indent=4, horizontal_spacing=6)
