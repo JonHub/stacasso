@@ -7,13 +7,10 @@ from html.parser import HTMLParser
 import re
 
 # make the version available with so.__version__
-from _version import __version__
+from _version import __version__k
 
-# TODO: qubit names in 'highlight' should be padded (right aligned),
+# TODO: qubit names in 'highlight' should be padded (right aligned), when unequal lengths
 #         also requires removing some of the circuit line ... but needs to be done!
-#       add labels to the other states
-#       add 4 qubit state
-#       maybe move circuits?
 
 # list of websafe colors, for the qubits
 # these are used both for coloring the qubits in the circuit digram,
@@ -64,14 +61,14 @@ def unscramble_wavefunction(wavefunction):
                         state_integer = int(state_string_binary, 2)  # converts to int
                         scrambled_state_order.append(state_integer)
 
-    #print(scrambled_state_order)
-    #print(wavefunction)
+    # print(scrambled_state_order)
+    # print(wavefunction)
 
     # to unscramble, sort the wavefunction (as a list)
     # by the scrambled_state_order
 
     # actually unscramble, here
-    wavefunction_unscrambled = [pair[1] for pair in sorted(zip(scrambled_state_order,wavefunction))]
+    wavefunction_unscrambled = [pair[1] for pair in sorted(zip(scrambled_state_order, wavefunction))]
 
     # convert back to numpy array
     wavefunction_unscrambled = np.array(wavefunction_unscrambled)
@@ -544,12 +541,17 @@ def draw_wavefunction8(state=None,
         border_color_a = border_color
         border_color_b = border_color
 
-    draw_wavefunction4(state[:4], location=location, scale=scale, border_color=border_color_a)
-    draw_wavefunction4(
-        state[4:],
-        location=[location[0], location[1]-scale*np.sqrt(32)],
-        scale=scale*.9,
-        border_color=border_color_b)
+    # draw first half
+    draw_wavefunction4(state[:4],
+                       location=location,
+                       scale=scale,
+                       border_color=border_color_a)
+
+    # draw second half
+    draw_wavefunction4(state[4:],
+                       location=[location[0], location[1]-scale*np.sqrt(32)],
+                       scale=scale*.9,
+                       border_color=border_color_b)
 
     if label is not None:
         text_loc = (loc[0]-s*.75, loc[1]-11*s)
@@ -573,10 +575,10 @@ def draw_wavefunction16(state=None,
     loc = location
     s = scale
 
+    # draw first half
     draw_wavefunction8(state[:8], location=location, scale=1)
-    # draw_wavefunction8(
-    #    state[8:], location=[location[0]+np.sqrt(32)/2, location[1]-np.sqrt(32)/2], scale=.9, border_color=cmap(3))
 
+    # draw seconcd half
     draw_wavefunction8(state[8:],
                        location=[location[0], location[1]-2*np.sqrt(32)],
                        scale=.9,
@@ -685,7 +687,7 @@ def make_wavefunction_list(circuit, include_initial_wavefunction=True):
 
     for i, step in enumerate(simulator.simulate_moment_steps(circuit)):
         wavefunction_scrambled = step.state_vector()
-        wavefunction = unscramble_wavefunction( wavefunction_scrambled )
+        wavefunction = unscramble_wavefunction(wavefunction_scrambled)
         wavefunctions.append(wavefunction)
 
     if include_initial_wavefunction:
@@ -732,6 +734,7 @@ class HTMLFilter(HTMLParser):
 
 
 def html_to_text(html_string):
+    """ uses the HTMLFilter class to strip the HTML tags from text """
     f = HTMLFilter()
     f.feed(html_string)
     text_string = f.text
