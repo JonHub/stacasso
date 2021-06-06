@@ -1,21 +1,27 @@
-### Stacasso README
+> Stacasso README, from [GitHub](https://github.com/JonHub/stacasso).
+>
+> This file is best viewed rendered at [jonhub.github.io/Stacasso](jonhub.github.io/Stacasso).
+
+Stacasso is a Python library for displaying and visualizing quantum computing circuits.
+
+Stacasso works with top of [Cirq](https://github.com/quantumlib/Cirq), the open-source, widely supported quantum computing framework.  Cirq is used to create and simulate circuits.  Stacasso adds:
+
+* **Syntax highlighting** for quantum computing circuits, with color and formatting.  Output can be displayed directly to the screen ("pretty-print"), or returned as `.html` strings for display elsewhere.
+* **Visualizations** of the circuit's execution, by drawing wave function amplitudes (probabilities) in state space.  Circuits simulations can be "illustrated" as they execute, from start to finish.
+
+> Please note Stacasso is currently in beta release.  Features are being added and improved.  Currently, syntax highlighting should work on any circuit.  Illustrations work on circuits up to four qubits.
+
+These tools can be used to understanding and creating quantum circuits, in the same way that syntax highlighting and debugging tools have become indispensable tools in other computing languages.
+
+To get started using Stacasso, see [installing](#installing), below.
+
+The [examples](#examples) (below) walk through creating and illustrating 1, 2, 3, and then 4-qubit circuits, using Cirq and Stacasso.  These four circuits build on each other conceptually, and introduce many of the key concepts in quantum computation (superposition, entanglement, probability/amplitudes, phase).
+
+More information can be found in the [Stacasso Guide (Notebook)](https://jonhub.github.io/stacasso/notebooks/stacasso_guide.html).  The notebook is part of Stacasso, and can be executed locally, as a starting point for exploring quantum computation.  Note that the guide (as well as the Stacasso project) is currently usable, but a work in progress
 
 
-Stacasso is a Python library for visualizing quantum computing circuits.  This includes syntax highlighting, as well as  illustrating the evolving wavefunction as the algorithm executes.
 
-The main repository resides on [GitHub](https://github.com/JonHub/stacasso).  The documentation (contained in the repository) is also rendered into `.html`, and is best viewed online (rather than rendered by GitHub):
-
-* **[Stacasso README](https://jonhub.github.io/stacasso/)** (this file)
-* [Stacasso Guide (Notebook)](https://jonhub.github.io/stacasso/notebooks/stacasso_guide.html) (Introduction and Users's Guide, with Examples)
-
-> NOTE, Stacasso is currently *alpha* code!  This is an initial, pre-release, to demonstrate features and get feedback. Attempts will be made do document missing features / upcoming features, but be aware that code and interface may change.
-
-Stacasso integrates with [Cirq](https://github.com/quantumlib/Cirq), the quantum computing framework, which is used to create and simulate the circuits.  Stacasso adds the ability  Users can work within Cirq, and use Stacasso to:
-
-* **Pretty-Print  Circuits**.  Adds color (syntax highlighting) to circuits.  Outputs can be displayed to the screen, or returned as `.html` strings, for display elsewhere.
-* **Visualize Simulations**.  Illustrates a circuit's wavefunction evolution, as by drawing probabilities (amplitudes) in a state space.
-
-For more information on using Cirq, see
+For more information on quantum computing using Cirq, see
 
 * [Introduction to Cirq](https://quantumai.google/cirq/tutorials/educators/intro)
 
@@ -39,7 +45,7 @@ Uninstall with:
 pip uninstall stacasso
 ```
 
-You should now be able to execute the `stacasso_introduction` notebook.  Note that the notebook will install google Cirq (using pip), if you do not already have it installed.
+You should now be able to execute the `stacasso_guide` notebook.  Note that the notebook will install google Cirq (using pip), if it is not aready installed..
 
 #### Examples
 
@@ -73,11 +79,13 @@ so.illustrate( qrng_circuit, labels )
 </div>
 <div><img title="quantum random number generator" alignment="left" src="notebooks/outputs/qrng_illustration_keep.svg"></div>
 
-State space is drawn as a grid below the circuit (like a game board).  Probabilities are visualized as colored disks, with the area proportional to the probability of being in that state, if measured.  The phase of the underlying amplitude in encoded in the disk color, as well as the orientation of the "dial" (radius) of the disk.
+Notice that the wave function (the state of the algorithm) is drawn as a grid below the circuit, like a game board.  A single qubit has two states, so there are two squares, drawn on top of each other.
+
+Probabilities are visualized as colored disks, with the area proportional to the probability of being measured in that state.  The (complex) amplitude is the radius of the disk, with the phase encoded by the disk orientation (the "dial"), as well as color.
 
 ##### Bell Circuit (2-qubits)
 
-The above circuit can be extended, by entangling the first qubit with a second.  This creates the classic Bell State, and the circuit demonstrates many fundamental quantum computing concepts.  (Initial state, superposition, entanglement, and collapse.)
+The above circuit can be extended, by entangling the first qubit with a second.  This creates the classic Bell State, where the result of operations on the first qubit, such as measurement, are inextricably linked to the second qubit.
 
 ```python
 import cirq
@@ -103,11 +111,13 @@ so.illustrate(bell_circuit, labels)
 </div>
 <div><img title="bell circuit" alignment="left" src="notebooks/outputs/bell_illustration_keep.svg"></div>
 
-Note that for circuits with two or more qubit circuits, `Stacasso` draws the state space matrix rotated by 45 degrees, for visual clarity.
+For this circuit, and any circuit with two or more qubit circuits, `Stacasso` draws the state space matrix rotated by 45 degrees, for visual clarity.
 
 ##### Quantum Teleportation (3-qubits)
 
-This circuit builds on the above circuit.  The entangled qubits created are shared by Alice and Bob, who may be located physically very distant from each other.  Alice entangles the message (encoded as a quantum state) into her qubit, and Bob is then able to read the meassage from his (entangled) qubit.
+(Circuit from [Google Cirq Tutorial](https://quantumai.google/cirq/tutorials/educators/textbook_algorithms#quantum_teleportation).)
+
+The teleportation circuit uses the Bell State to send the a message.  Entangled qubits (the Bell State) are shared by Alice and Bob, who may be located physically very distant from each other.  Alice entangles the message (encoded as a quantum state) into her qubit, and Bob is then able to read the meassage from his (entangled) qubit.
 
 <div>
 <pre style="white-space:pre;font-size:medium;background:white;line-height:normal;font-family:monospace;">  <span style="color:Maroon">"Quantum Teleportation"</span><br><br>    <span style="background-color:WhiteSmoke;color:Blue">0 (Ali)</span>: ──────H──────<span style="color:MediumSlateBlue">@</span>─────────────────X─────────────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<span style="color:MediumSlateBlue">@</span>─────────────<br>                          │                 │             │      │<br>    <span style="background-color:WhiteSmoke;color:DarkOrange">1 (Bob)</span>: ─────────────X─────────────────┼─────────────┼──────X──────<span style="color:MediumSlateBlue">@</span>──────<br>                                            │             │             │<br>    <span style="background-color:WhiteSmoke;color:ForestGreen">2 (Msg)</span>: ────────────────────X^0.3──────<span style="color:MediumSlateBlue">@</span>──────H──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>─────────────<span style="color:MediumSlateBlue">@</span>──────<br></pre>
@@ -115,9 +125,17 @@ This circuit builds on the above circuit.  The entangled qubits created are shar
 
 <div><img title="quantum teleportation" alignment="left" src="notebooks/outputs/tele_illustration_keep.svg"></div>
 
+Since the original message disappears (the "no cloning" rule in quantum mechanics), the value contain on that qubit is said to have been "teleported."  Notice that since this circuit contains a measurement, the results are stochastic; sometimes, the message is teleported, sometimes it is not.
+
+In a typical quantum computing application, an algorithm is run many times.  Running `so.illustrate(circuit)` multiple times is a good way to gain understanding of the stochastic nature of measurement and collapse in quantum computing.
+
 ##### HLD 2D (n-qubits)
 
-The "Hidden Linear Function, 2-dimensional" problem was the first "shallow code," introduced in 2018.
+(Circuit from [Google Cirq Tutorial](https://quantumai.google/cirq/tutorials/hidden_linear_function).  See "[Quantum advantage with shallow circuits](https://arxiv.org/abs/1704.00690)" for the original paper.)
+
+The "Hidden Linear Function, 2-dimensional" problem was the first "shallow code," introduced in 2018.  *Shallow* refers to the number of steps that the circuit takes; the idea is to perform a useful computation quickly, before the quantum state of the computer has time to collapse.
+
+
 
 <div>
 <pre style="white-space:pre;font-size:medium;background:white;line-height:normal;font-family:monospace;">  <span style="color:Maroon">"HLF 2D"</span><br><br>    <span style="background-color:WhiteSmoke;color:Blue">0</span>: ──────H──────<span style="color:MediumSlateBlue">@</span>──────<span style="color:MediumSlateBlue">@</span>─────────────S──────H──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<br>                    │      │<br>    <span style="background-color:WhiteSmoke;color:DarkOrange">1</span>: ──────H──────<span style="color:MediumSlateBlue">@</span>──────┼──────<span style="color:MediumSlateBlue">@</span>──────S──────H──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<br>                           │      │<br>    <span style="background-color:WhiteSmoke;color:ForestGreen">2</span>: ──────H─────────────┼──────┼─────────────H──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<br>                           │      │<br>    <span style="background-color:WhiteSmoke;color:DarkRed">3</span>: ──────H─────────────<span style="color:MediumSlateBlue">@</span>──────<span style="color:MediumSlateBlue">@</span>──────S──────H──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<br></pre>
@@ -125,16 +143,17 @@ The "Hidden Linear Function, 2-dimensional" problem was the first "shallow code,
 
 <div><img title="hlf2d" alignment="left" src="notebooks/outputs/hlf2d_illustration_keep.svg"></div>
 
+The HLF 2D probelm is useful, in that it can scale to essentially any size (any number of qubits).  Note that the correct solutions to the problem are contain in the final wavefunction, before the measurement.  In this case there are two solutions (zero is always a solution), though only one solution is apparent after measurement.
+
 #### More Qubits
 
-Visualizations can be extended to three (and higher) qubits, which can be thought of as cubes in three (and higher) dimensions.  `Stacasso` attempts to draw higher dimensional cubes (hypercubes) by duplicating and tiling the game board (state space representation) for each additional qubit added.
+Quite a few interesting quantum circuits can be built with two or three qubits, and many building blocks in quantum computing can be broken down into these smaller circuit snippets.
 
-Quite a few interesting quantum circuits can be built with two or three qubits, and many building blocks in quantum computing can be broken down into these smaller circuit snippets.  The tiling scheme can also be extended for five, or more qubits.
+The tiling scheme can also be extended to five or more qubits, and in principle, Stacasso should be able to visualize higher dimensional circuits, such as quantum error correction.  (Planned for future relases).
 
-Since drawing all sides of a cube was the artistic goal of the "cubist" painters, the name Stacasso is a tribute to the most famous cubist, State-space Picasso.
+The wave function which describe a quantum system can be thought of living inside of a "state space" (or "Hilbert space), which is shaped like a high-dimensional cube.  Stacasso attempts to draw this space, in a logical and useful manner, to provide insight.
 
-Stacasso currently supports visualizations of up to four qubit circuits, with plans to support higher numbers in the future. 
-
+Since drawing all sides of a cube was the artistic goal of the "cubist" painters, the name Stacasso is a tribute to the most famous cubist: (State Space) Picasso.
 
 #### License
 
@@ -145,14 +164,14 @@ The code uses parts of the [Google Cirq]() project (also under Apache 2.0 Licens
 
 #### Contributing
 
-The repository is new and contains alpha code, and currently not accepting contributions at this time.  Please check back, as we would like to be able to accept contributions at some point in the future.
+The repository is new and contains beta code, and currently not accepting contributions at this time.  Please check back, as we would like to be able to accept contributions at some point in the future.
 
 #### Future Work
 
 (Internally, the code could to be cleaned up and refactored.)
 
-The goal is to get `Stacasso` usable, and then get it integrated into Google's cirq `contributing` folder, see [Contribute to Google Cirq](https://github.com/quantumlib/Cirq/blob/master/CONTRIBUTING.md) ... 
+* [ ] The goal is to get `Stacasso` usable, and then get it integrated into Google's cirq `contributing` folder, see [Contribute to Google Cirq](https://github.com/quantumlib/Cirq/blob/master/CONTRIBUTING.md) ... 
 
-Larger qubits would be interesting to visualize.  In this case, the gameobard would have to be stepped (or animated).  For instance, ten qubits needs 1024 states, but could be used to show error correction, such as the Shore code (9-qubits).
+* [ ] Larger qubits would be interesting to visualize.  In this case, the gameobard would have to be stepped (or animated).  For instance, ten qubits needs 1024 states, but could be used to show error correction, such as the Shore code (9-qubits).
 
-Larger HLF2D problems would be interesting, as well as the shallow code that ran on Google's Sycamore (need to dig out that reference).
+* [ ] Snytax highlighting can be expanded to include numbers, and qubit names (right justify), when they are different lenths.
