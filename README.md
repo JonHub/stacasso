@@ -1,13 +1,13 @@
 > Stacasso README, from [GitHub](https://github.com/JonHub/stacasso).
 >
-> This file is best viewed rendered at [jonhub.github.io/Stacasso](jonhub.github.io/Stacasso).
+> Best viewed at [jonhub.github.io/Stacasso](jonhub.github.io/Stacasso).
 
 Stacasso is a Python library for displaying and visualizing quantum computing circuits.
 
-Stacasso works with top of [Cirq](https://github.com/quantumlib/Cirq), the open-source, widely supported quantum computing framework.  Cirq is used to create and simulate circuits.  Stacasso adds:
+Stacasso works on top of [Cirq](https://github.com/quantumlib/Cirq), the open-source, widely supported quantum computing framework.  Cirq is used to create and simulate circuits.  Stacasso adds:
 
-* **Syntax highlighting** for quantum computing circuits, with color and formatting.  Output can be displayed directly to the screen ("pretty-print"), or returned as `.html` strings for display elsewhere.
-* **Visualizations** of the circuit's execution, by drawing wave function amplitudes (probabilities) in state space.  Circuits simulations can be "illustrated" as they execute, from start to finish.
+* **Syntax highlighting** for quantum computing circuits (color and formatting).  Output can be displayed directly to the screen ("pretty-print"), or returned as `.html` strings for display elsewhere.
+* **Visualization** of the circuit execution, by drawing wave function amplitudes (probabilities) in state space.  Circuits simulations can be "illustrated" as they execute, from start to finish, with a single function call.
 
 > Please note Stacasso is currently in beta release.  Features are being added and improved.  Currently, syntax highlighting should work on any circuit.  Illustrations work on circuits up to four qubits.
 
@@ -16,6 +16,8 @@ These tools can be used to understanding and creating quantum circuits, in the s
 To get started using Stacasso, see [installing](#installing), below.
 
 The [examples](#examples) (below) walk through creating and illustrating 1, 2, 3, and then 4-qubit circuits, using Cirq and Stacasso.  These four circuits build on each other conceptually, and introduce many of the key concepts in quantum computation (superposition, entanglement, probability/amplitudes, phase).
+
+Many of these concepts in quantum computing have a direct visual counterpart.
 
 More information can be found in the [Stacasso Guide (Notebook)](https://jonhub.github.io/stacasso/notebooks/stacasso_guide.html).  The notebook is part of Stacasso, and can be executed locally, as a starting point for exploring quantum computation.  Note that the guide (as well as the Stacasso project) is currently usable, but a work in progress
 
