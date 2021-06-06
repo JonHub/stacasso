@@ -7,7 +7,7 @@ from html.parser import HTMLParser
 import re
 
 # make the version available with so.__version__
-from _version import __version__k
+from _version import __version__
 
 # TODO: qubit names in 'highlight' should be padded (right aligned), when unequal lengths
 #         also requires removing some of the circuit line ... but needs to be done!

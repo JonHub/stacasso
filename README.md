@@ -1,8 +1,12 @@
+
+
 > Stacasso README, from [GitHub](https://github.com/JonHub/stacasso).
 >
 > Best viewed at [jonhub.github.io/Stacasso](jonhub.github.io/Stacasso).
 
 Stacasso is a Python library for displaying and visualizing quantum computing circuits.
+
+![](notebooks/outputs/hlf2d_3qubit_keep.svg)
 
 Stacasso works on top of [Cirq](https://github.com/quantumlib/Cirq), the open-source, widely supported quantum computing framework.  Cirq is used to create and simulate circuits.  Stacasso adds:
 
@@ -109,7 +113,7 @@ so.illustrate(bell_circuit, labels)
 ```
 
 <div>
-<pre style="white-space:pre;font-size:medium;background:white;line-height:normal;font-family:monospace;">  <span style="color:Maroon">Bell State</span><br><br>    <span style="background-color:WhiteSmoke;color:Blue">q0</span>: ──────H──────<span style="color:MediumSlateBlue">@</span>──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<br>                     │      │<br>    <span style="background-color:WhiteSmoke;color:DarkOrange">q1</span>: ─────────────X──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<br></pre>
+<pre style="white-space:pre;font-size:medium;background:white;line-height:normal;font-family:monospace;">  <span style="color:Maroon">"Bell State"</span><br><br>    <span style="background-color:WhiteSmoke;color:Blue">q0</span>: ──────H──────<span style="color:MediumSlateBlue">@</span>──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<br>                     │      │<br>    <span style="background-color:WhiteSmoke;color:DarkOrange">q1</span>: ─────────────X──────<span style="background-color:WhiteSmoke;color:Maroon;font-weight:bold">M</span>──────<br></pre>
 </div>
 <div><img title="bell circuit" alignment="left" src="notebooks/outputs/bell_illustration_keep.svg"></div>
 
