@@ -55,6 +55,10 @@ You should now be able to execute the `stacasso_guide` notebook.  Note that the 
 
 #### Examples
 
+A few examples of common quantum computing circuits, illustrated with Stacasso, will make the usage more clear.
+
+> (Note, these images do not render correctly on GitHub.  Make sure you are viewing the file at  [jonhub.github.io/Stacasso](jonhub.github.io/Stacasso)]([jonhub.github.io/Stacasso](jonhub.github.io/Stacasso)).
+
 ##### Quantum Random Number Generator (1-qubit)
 
 We can make and illustrate a simple 1 qubit quantum circuit with:
