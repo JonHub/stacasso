@@ -6,12 +6,14 @@ import cmath
 from html.parser import HTMLParser
 import re
 
+# make the version available with so.__version__
+from _version import __version__
+
 # TODO: qubit names in 'highlight' should be padded (right aligned),
 #         also requires removing some of the circuit line ... but needs to be done!
 #       add labels to the other states
 #       add 4 qubit state
 #       maybe move circuits?
-
 
 # list of websafe colors, for the qubits
 # these are used both for coloring the qubits in the circuit digram,

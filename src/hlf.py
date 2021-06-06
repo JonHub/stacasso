@@ -7,6 +7,60 @@ import numpy as np
 import cirq
 
 
+def make_interesting_circuit( n_qubits = 3 ):
+    """ Create smaller version of the HLF2D problem (3, 4 and 5 qubits)
+          q is number of qubits,
+          l is min_L_size
+    
+        Every HLF2D problem has zero as an answer (???),
+        and can have additional answers
+        interesting versions of the problem have only a few answers
+    """
+
+    # original code uses 'q'
+    q = n_qubits
+
+    # depending on the size of the problem (number of qubits),
+    # l must be set appropriately, to have a small number of solutions
+    if q == 3:
+        # three qubits
+        l = 4
+    elif q == 4:
+        # four qubits
+        l = 5
+    elif q == 5:
+        l = 12
+    elif q == 10:
+        # ten qubits (number from original google code)
+        l = 4
+    else:
+        assert False,'need to find a good l for this q'
+
+    print('Creating an HLF 2D problem instance with')
+    print('  ', q, 'qubits', '\n  ', l, 'min size of L subspace\n')
+
+    problem = None
+
+    while problem is None:
+        # careful! this never exits ... 
+        # just make sure q and l are set correctly
+        print('finding interesting problem ... ', end='')
+        problem = find_interesting_problem(q, l)
+        if problem is None:
+            print('(not found)')
+        else:
+            print('done!')
+
+    # the original google code uses 10 qbits
+
+    print("Size of subspace L:", len(problem.L))
+    print("Number of solutions: %d" % len(problem.all_zs))
+
+    hlf_circuit = generate_circuit_for_problem(problem)
+
+    return hlf_circuit
+
+
 class HiddenLinearFunctionProblem:
     """Instance of Hidden Linear Function problem.
 
