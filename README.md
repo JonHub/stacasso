@@ -51,13 +51,13 @@ Uninstall with:
 pip uninstall stacasso
 ```
 
-You should now be able to execute the `stacasso_guide` notebook.  Note that the notebook will install google Cirq (using pip), if it is not aready installed..
+You should now be able to execute the `stacasso_guide` notebook.  Note that the notebook will install google Cirq (using pip), if it is not already installed.
 
 #### Examples
 
 A few examples of common quantum computing circuits, illustrated with Stacasso, will make the usage more clear.
 
-> (Note, these images do not render correctly on GitHub.  Make sure you are viewing the file at  [jonhub.github.io/Stacasso](jonhub.github.io/Stacasso)]([jonhub.github.io/Stacasso](jonhub.github.io/Stacasso)).
+> Note, these images do not render correctly on GitHub.  Make sure you are viewing the file at  [jonhub.github.io/Stacasso](jonhub.github.io/Stacasso).
 
 ##### Quantum Random Number Generator (1-qubit)
 
@@ -153,7 +153,7 @@ The "Hidden Linear Function, 2-dimensional" problem was the first "shallow code,
 
 <div><img title="hlf2d" alignment="left" src="notebooks/outputs/hlf2d_illustration_keep.svg"></div>
 
-The HLF 2D probelm is useful, in that it can scale to essentially any size (any number of qubits).  Note that the correct solutions to the problem are contain in the final wavefunction, before the measurement.  In this case there are two solutions (zero is always a solution), though only one solution is apparent after measurement.
+The HLF 2D problem is useful, in that it can scale to essentially any size (any number of qubits).  Note that the correct solutions to the problem are contain in the final wave function, before the measurement.  In this case there are two solutions (zero is always a solution), though only one solution is apparent after measurement.
 
 #### More Qubits
 
@@ -182,6 +182,6 @@ The repository is new and contains beta code, and currently not accepting contri
 
 * [ ] The goal is to get `Stacasso` usable, and then get it integrated into Google's cirq `contributing` folder, see [Contribute to Google Cirq](https://github.com/quantumlib/Cirq/blob/master/CONTRIBUTING.md) ... 
 
-* [ ] Larger qubits would be interesting to visualize.  In this case, the gameobard would have to be stepped (or animated).  For instance, ten qubits needs 1024 states, but could be used to show error correction, such as the Shore code (9-qubits).
+* [ ] Larger qubits would be interesting to visualize.  In this case, the game board would have to be stepped (or animated).  For instance, ten qubits needs 1024 states, but could be used to show error correction, such as the Shore code (9-qubits).
 
-* [ ] Snytax highlighting can be expanded to include numbers, and qubit names (right justify), when they are different lenths.
+* [ ] Syntax highlighting can be expanded to include numbers, and qubit names (right justify), when they are different lengths.
