@@ -2,7 +2,7 @@
 
 > Stacasso README, from [GitHub](https://github.com/JonHub/stacasso).
 >
-> Best viewed at [jonhub.github.io/Stacasso](jonhub.github.io/Stacasso).
+> Best viewed at [jonhub.github.io/Stacasso](https://jonhub.github.io/stacasso/).
 
 Stacasso is a Python library for displaying and visualizing quantum computing circuits.
 
@@ -57,7 +57,7 @@ You should now be able to execute the `stacasso_guide` notebook.  Note that the 
 
 A few examples of common quantum computing circuits, illustrated with Stacasso, will make the usage more clear.
 
-> Note, these images do not render correctly on GitHub.  Make sure you are viewing the file at  [jonhub.github.io/Stacasso](jonhub.github.io/Stacasso).
+> Note, these images do not render correctly on GitHub.  Make sure you are viewing the file at  [jonhub.github.io/Stacasso](https://jonhub.github.io/stacasso/).
 
 ##### Quantum Random Number Generator (1-qubit)
 
@@ -135,7 +135,7 @@ The teleportation circuit uses the Bell State to send the a message.  Entangled 
 
 <div><img title="quantum teleportation" alignment="left" src="notebooks/outputs/tele_illustration_keep.svg"></div>
 
-Since the original message disappears (the "no cloning" rule in quantum mechanics), the value contain on that qubit is said to have been "teleported."  Notice that since this circuit contains a measurement, the results are stochastic; sometimes, the message is teleported, sometimes it is not.
+Since the original message disappears (the "no cloning" rule in quantum mechanics), the value contain in that qubit is said to have been "teleported."  Notice that since this circuit contains a measurement, the results are stochastic; sometimes, the message is teleported, sometimes it is not.
 
 In a typical quantum computing application, an algorithm is run many times.  Running `so.illustrate(circuit)` multiple times is a good way to gain understanding of the stochastic nature of measurement and collapse in quantum computing.
 
@@ -143,7 +143,7 @@ In a typical quantum computing application, an algorithm is run many times.  Run
 
 (Circuit from [Google Cirq Tutorial](https://quantumai.google/cirq/tutorials/hidden_linear_function).  See "[Quantum advantage with shallow circuits](https://arxiv.org/abs/1704.00690)" for the original paper.)
 
-The "Hidden Linear Function, 2-dimensional" problem was the first "shallow code," introduced in 2018.  *Shallow* refers to the number of steps that the circuit takes; the idea is to perform a useful computation quickly, before the quantum state of the computer has time to collapse.
+The "Hidden Linear Function (constrained to 2-dimensions)" problem was the first "shallow code," introduced in 2018.  *Shallow* refers to the number of steps that the circuit takes; the idea is to perform a useful computation quickly, before the quantum state of the computer has time to collapse.
 
 
 
